@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>کار و درآمد · درس ۱ | ساخت پورتفولیو و GitHub</title><meta name="description" content="برای کارفرما و مشتری، پروژه‌ی واقعی و قابل دیدن از هر مدرکی مهم‌تر است. در این درس از میان ۲۲ پروژه‌ی دوره یک پورتفولیوی کوچک ولی تأثیرگذار می‌سازی، آن را "><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/career-portfolio.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="کار و درآمد · درس ۱ | ساخت پورتفولیو و GitHub"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">کار و درآمد · درس ۱</span><h1>ساخت پورتفولیو و GitHub</h1><p>برای کارفرما و مشتری، پروژه‌ی واقعی و قابل دیدن از هر مدرکی مهم‌تر است. در این درس از میان ۲۲ پروژه‌ی دوره یک پورتفولیوی کوچک ولی تأثیرگذار می‌سازی، آن را روی GitHub می‌گذاری و آنلاین منتشر می‌کنی.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">پورتفولیو چیست و چه چیزی باید داشته باشد؟</a></li><li><a href="#s2">کدام پروژه‌ها را انتخاب کنم؟</a></li><li><a href="#s3">GitHub: اولین مخزن</a></li><li><a href="#s4">README: ویترین هر پروژه</a></li><li><a href="#s5">انتشار آنلاین</a></li><li><a href="#s6">رزومه، لینکدین و چک‌لیست</a></li><li><a href="#s7">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>پورتفولیو چیست و چه چیزی باید داشته باشد؟</h2></div><p>پورتفولیو یک صفحه‌ی وب است که کارهایت را نشان می‌دهد. کارفرما معمولاً چند دقیقه وقت دارد؛ پس کمتر ولی بهتر:</p><ul><li><b>۴ تا ۶ پروژه‌ی خوب</b> به‌جای ۲۰ پروژه‌ی نیمه‌کاره.</li><li>برای هر پروژه: عکس یا GIF، یک جمله درباره‌ی مسئله‌ای که حل می‌کند، تکنولوژی‌ها، لینک <b>نسخه‌ی زنده</b> و لینک <b>کد</b>.</li><li>یک بخش «درباره‌ی من» کوتاه و راه ارتباطی (ایمیل، تلگرام، GitHub، لینکدین).</li><li>سایتی که روی موبایل هم درست دیده شود.</li></ul></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>کدام پروژه‌ها را انتخاب کنم؟</h2></div><p>پروژه‌های دوره برای یادگیری‌اند؛ برای پورتفولیو باید «مال خودت» شوند. پیشنهاد انتخاب از میان پروژه‌های دوره:</p><ul><li><b>فروشگاه با سبد خرید</b> (نشان‌دهنده‌ی مدیریت state و ذخیره‌سازی)</li><li><b>برنامه‌ی آب‌وهوا</b> یا <b>Movie API</b> (نشان‌دهنده‌ی کار با API و مدیریت خطا)</li><li><b>تودولیست با LocalStorage</b> (CRUD کامل)</li><li><b>سایت تک‌صفحه‌ای</b> (طراحی و انیمیشن)</li><li>یک پروژه‌ی <b>ایده‌ی خودت</b> که در دوره نبوده</li></ul><div class="note warn"><div class="note-title">صادق بمان</div><p>سورس پروژه‌ها را می‌توانی شخصی‌سازی کنی، ولی همان نسخه‌ی بدون تغییر را به‌عنوان «کار خودم» نگذار. حداقل چند ویژگی از بخش «چالش‌ها» را اضافه کن، ظاهر را عوض کن و اسم و محتوای خودت را بگذار. مصاحبه‌کننده معمولاً می‌پرسد «این بخش را چطور نوشتی؟».</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>GitHub: اولین مخزن</h2></div><p>Git سیستم نگه‌داری نسخه‌های کد است و GitHub سایتی که مخزن‌های Git را نگه می‌دارد. بعد از نصب Git و ساخت حساب، در پوشه‌ی پروژه:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>دستورهای پایه‌ی Git</span><span class="demo-tag">sh</span></div><pre><code>git init                              # شروع مخزن در این پوشه
+git add .                             # همه‌ی فایل‌ها را برای ثبت آماده کن
+git commit -m "اولین نسخه‌ی پروژه"    # یک نقطه‌ی ذخیره بساز
+git branch -M main
+git remote add origin https://github.com/نام-کاربری/نام-مخزن.git
+git push -u origin main               # بفرست به GitHub</code></pre></div></div><p>بعد از آن، هر تغییر مهم را با <code>git add .</code> و <code>git commit -m "..."</code> و <code>git push</code> ثبت کن. پیام‌های commit را کوتاه و روشن بنویس: «افزودن فیلتر دسته»، نه «تغییر».</p></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>README: ویترین هر پروژه</h2></div><p>کسی که مخزن تو را باز می‌کند اول README را می‌بیند. یک قالب ساده که همیشه کار می‌کند:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>نمونه README.md</span><span class="demo-tag">md</span></div><pre><code># فروشگاه کوچک (JavaScript)
+
+سبد خرید کامل با ذخیره در LocalStorage.
+
+🔗 **نسخه‌ی زنده:** https://example.netlify.app
+📷 ![تصویر پروژه](screenshot.png)
+
+## ویژگی‌ها
+- افزودن، کم و زیاد کردن و حذف محصول
+- محاسبه‌ی جمع کل
+- ماندن سبد بعد از رفرش
+
+## تکنولوژی‌ها
+HTML، CSS، JavaScript (ES2023)، LocalStorage
+
+## اجرا
+فایل `index.html` را با Live Server باز کن.
+
+## چیزی که یاد گرفتم
+مدیریت state و جدا کردن داده از نمایش.</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>انتشار آنلاین</h2></div><p>پروژه‌ی تو فقط HTML و CSS و JavaScript است، پس همه‌ی این روش‌ها رایگان و ساده‌اند:</p><ol><li><b>Netlify:</b> وارد سایت شو و پوشه‌ی پروژه را بکش و رها کن (Netlify Drop) یا مخزن GitHub را وصل کن تا با هر push خودکار منتشر شود.</li><li><b>GitHub Pages:</b> در مخزن به Settings ← Pages برو و شاخه‌ی <code>main</code> را انتخاب کن.</li><li><b>Vercel:</b> مخزن را import کن؛ برای سایت ساده‌ی استاتیک تنظیمی لازم نیست.</li></ol><div class="note tip"><div class="note-title">قبل از انتشار</div><p>بعد از انتشار، لینک را از روی گوشی هم باز کن و ببین درست دیده می‌شود. همچنین مطمئن شو در کدت کلید API یا رمزی نمانده؛ هرچه در GitHub عمومی باشد، همه می‌بینند.</p></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>رزومه، لینکدین و چک‌لیست</h2></div><ul><li>رزومه‌ی یک صفحه‌ای: چکیده‌ی دو خطی، مهارت‌ها (JavaScript، DOM، API، Git)، ۳ تا ۴ پروژه با لینک، تحصیلات و دوره‌ها.</li><li>پروفایل لینکدین یا پروفایل کاری: عکس واضح، عنوان روشن («توسعه‌دهنده‌ی فرانت‌اند»)، لینک پورتفولیو.</li><li>مخزن GitHub مرتب: README برای هر پروژه، پین کردن ۴ پروژه‌ی برتر، پروفایل کامل.</li></ul><div class="note info"><div class="note-title">واقع‌بینی</div><p>هیچ‌کس نمی‌تواند شغل یا درآمد خاصی را تضمین کند؛ بازار کار تغییر می‌کند. ولی پورتفولیوی خوب و مهارت واقعی همیشه شانس تو را بیشتر می‌کند.</p></div></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>یکی از پروژه‌های دوره را انتخاب کن، سه ویژگی از چالش‌هایش را اضافه کن و آن را روی GitHub بگذار.</p><details class="ex-ans"><summary>راهنمایی</summary><p>نام مخزن را کوتاه و روشن بگذار (مثلاً <code>js-shop-cart</code>) و README را با قالب بالا بنویس.</p></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>پورتفولیوی تک‌صفحه‌ای بساز که کارت پروژه‌هایت را از یک آرایه‌ی JavaScript بسازد و روی Netlify منتشر کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>الگوی پروژه‌ی «API محلی» + «سایت تک‌صفحه‌ای».</p></details></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="plugin-swiper.html">→ Swiper: اسلایدر لمسی حرفه‌ای</a><a href="career-freelance.html">شروع فریلنسری و قیمت‌گذاری پروژه ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

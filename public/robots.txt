@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /lessons/01-intro.html
+Allow: /lessons/02-variables.html
+Allow: /lessons/03-datatypes.html
+Disallow: /lessons/
+Disallow: /downloads/
+Disallow: /api/
+Disallow: /login.html
+
+Sitemap: https://rayvo-javascript.netlify.app/sitemap.xml

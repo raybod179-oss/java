@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۲۱ | پروژه‌ی سایت تک‌صفحه‌ای</title><meta name="description" content="یک سایت معرفی تک‌صفحه‌ای کامل که هر وب‌سایت شخصی یا شرکتی لازم دارد: منوی موبایل، هیرو با تایپ، بخش خدمات با ظاهر شدن کارت‌ها هنگام اسکرول، شمارنده‌های انی"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-one-page-site.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۲۱ | پروژه‌ی سایت تک‌صفحه‌ای"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۲۱</span><h1>پروژه‌ی سایت تک‌صفحه‌ای</h1><p>یک سایت معرفی تک‌صفحه‌ای کامل که هر وب‌سایت شخصی یا شرکتی لازم دارد: منوی موبایل، هیرو با تایپ، بخش خدمات با ظاهر شدن کارت‌ها هنگام اسکرول، شمارنده‌های انیمیشنی، فرم تماس با اعتبارسنجی و دکمه‌ی برگشت به بالا. این پروژه همه‌ی مهارت‌های DOM و رویدادها را کنار هم می‌گذارد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: ساختار و منوی موبایل</a></li><li><a href="#s4">قدم ۲: افکت تایپ بدون کتابخانه</a></li><li><a href="#s5">قدم ۳: انیمیشن با اسکرول</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="540"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+body{display:block;padding:0}
+html{scroll-behavior:smooth}
+nav{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:rgba(7,11,22,.88);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.logo{font-weight:700;color:var(--a)}
+.links{display:flex;gap:4px}.links a{color:var(--mut);text-decoration:none;padding:6px 12px;border-radius:999px;font-size:14px}.links a:hover{color:var(--text)}
+.burger{display:none;padding:4px 12px}
+@media(max-width:480px){.burger{display:block}.links{display:none;position:absolute;top:100%;left:0;right:0;flex-direction:column;background:var(--card);padding:8px}.links.open{display:flex}}
+section{padding:46px 18px;max-width:720px;margin:auto}
+.hero{text-align:center;padding-top:60px}.hero h1{font-size:30px;margin:0 0 8px}.hero p{color:var(--mut)}
+#typed{color:var(--a);min-height:1.4em;display:block;margin-top:6px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;opacity:0;transform:translateY(24px);transition:.6s}
+.card.in{opacity:1;transform:none}
+.stats{display:flex;justify-content:space-around;text-align:center}.stats b{font-size:32px;color:var(--a);display:block}
+form{display:grid;gap:10px}
+input,textarea{font:inherit;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.err{color:#fb7185;font-size:13px;min-height:1.2em}.ok{color:#4ade80}
+form button{background:var(--a);color:#1a1204;font-weight:700;border-color:var(--a)}
+#top{position:fixed;bottom:14px;left:14px;border-radius:50%;width:42px;height:42px;padding:0;display:none}
+#top.show{display:block}
+&lt;/style&gt;
+
+&lt;nav&gt;
+  &lt;span class="logo"&gt;Rayvo&lt;/span&gt;
+  &lt;button class="burger" id="burger" aria-label="منو" aria-expanded="false"&gt;☰&lt;/button&gt;
+  &lt;div class="links" id="links"&gt;
+    &lt;a href="#home"&gt;خانه&lt;/a&gt;&lt;a href="#services"&gt;خدمات&lt;/a&gt;&lt;a href="#numbers"&gt;آمار&lt;/a&gt;&lt;a href="#contact"&gt;تماس&lt;/a&gt;
+  &lt;/div&gt;
+&lt;/nav&gt;
+
+&lt;section class="hero" id="home"&gt;
+  &lt;h1&gt;طراحی و توسعه‌ی وب&lt;/h1&gt;
+  &lt;p&gt;ما &lt;span id="typed"&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;/section&gt;
+
+&lt;section id="services"&gt;
+  &lt;h2&gt;خدمات&lt;/h2&gt;
+  &lt;div class="cards"&gt;
+    &lt;div class="card"&gt;&lt;h3&gt;سایت شرکتی&lt;/h3&gt;&lt;p&gt;معرفی حرفه‌ای کسب‌وکار.&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;h3&gt;فروشگاه&lt;/h3&gt;&lt;p&gt;سبد خرید و پرداخت.&lt;/p&gt;&lt;/div&gt;
+    &lt;div class="card"&gt;&lt;h3&gt;داشبورد&lt;/h3&gt;&lt;p&gt;نمودار و گزارش.&lt;/p&gt;&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id="numbers"&gt;
+  &lt;div class="stats"&gt;
+    &lt;div&gt;&lt;b data-to="120"&gt;0&lt;/b&gt;پروژه&lt;/div&gt;
+    &lt;div&gt;&lt;b data-to="45"&gt;0&lt;/b&gt;مشتری&lt;/div&gt;
+    &lt;div&gt;&lt;b data-to="5"&gt;0&lt;/b&gt;سال تجربه&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/section&gt;
+
+&lt;section id="contact"&gt;
+  &lt;h2&gt;تماس با ما&lt;/h2&gt;
+  &lt;form id="form" novalidate&gt;
+    &lt;input id="name" placeholder="نام" aria-label="نام"&gt;
+    &lt;input id="email" placeholder="ایمیل" aria-label="ایمیل" type="email"&gt;
+    &lt;textarea id="msg" rows="3" placeholder="پیام" aria-label="پیام"&gt;&lt;/textarea&gt;
+    &lt;div class="err" id="err" role="alert"&gt;&lt;/div&gt;
+    &lt;button&gt;ارسال پیام&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/section&gt;
+&lt;button id="top" aria-label="برگشت به بالا"&gt;↑&lt;/button&gt;
+
+&lt;script&gt;
+// ۱) منوی موبایل
+const links = document.getElementById("links");
+const burger = document.getElementById("burger");
+burger.addEventListener("click", () =&gt; {
+  const open = links.classList.toggle("open");
+  burger.setAttribute("aria-expanded", String(open));
+});
+links.addEventListener("click", () =&gt; links.classList.remove("open"));
+
+// ۲) افکت تایپ
+const words = ["سایت می‌سازیم", "فروشگاه می‌سازیم", "ایده را اجرا می‌کنیم"];
+const typed = document.getElementById("typed");
+let w = 0, c = 0, deleting = false;
+function type() {
+  const word = words[w];
+  c += deleting ? -1 : 1;
+  typed.textContent = word.slice(0, c);
+  let delay = deleting ? 40 : 90;
+  if (!deleting &amp;&amp; c === word.length) { deleting = true; delay = 1200; }
+  else if (deleting &amp;&amp; c === 0) { deleting = false; w = (w + 1) % words.length; delay = 300; }
+  setTimeout(type, delay);
+}
+type();
+
+// ۳) ظاهر شدن کارت‌ها و شمارنده با اسکرول
+function countUp(el) {
+  const to = Number(el.dataset.to);
+  let n = 0;
+  const step = () =&gt; { n += Math.ceil(to / 40); el.textContent = Math.min(n, to); if (n &lt; to) requestAnimationFrame(step); };
+  step();
+}
+if ("IntersectionObserver" in window) {
+  const io = new IntersectionObserver((entries) =&gt; {
+    entries.forEach((e) =&gt; {
+      if (!e.isIntersecting) return;
+      e.target.classList.add("in");
+      if (e.target.dataset.to) countUp(e.target);
+      io.unobserve(e.target);                        // فقط یک بار
+    });
+  }, { threshold: 0.3 });
+  document.querySelectorAll(".card, [data-to]").forEach((el) =&gt; io.observe(el));
+} else {
+  document.querySelectorAll(".card").forEach((el) =&gt; el.classList.add("in"));
+}
+
+// ۴) فرم تماس
+document.getElementById("form").addEventListener("submit", (e) =&gt; {
+  e.preventDefault();
+  const err = document.getElementById("err");
+  const name = document.getElementById("name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const msg = document.getElementById("msg").value.trim();
+  err.className = "err";
+  if (name.length &lt; 2) return (err.textContent = "نام را وارد کن");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return (err.textContent = "ایمیل معتبر نیست");
+  if (msg.length &lt; 10) return (err.textContent = "پیام حداقل ۱۰ کاراکتر باشد");
+  err.className = "err ok";
+  err.textContent = "پیام شما ثبت شد ✓";
+  e.target.reset();
+});
+
+// ۵) برگشت به بالا
+const toTop = document.getElementById("top");
+window.addEventListener("scroll", () =&gt; toTop.classList.toggle("show", window.scrollY &gt; 300), { passive: true });
+toTop.addEventListener("click", () =&gt; window.scrollTo({ top: 0, behavior: "smooth" }));
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>one-page-site/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: ساختار و منوی موبایل</h2></div><p>سایت از چند <code>section</code> با شناسه ساخته شده و لینک‌های منو با <code>href="#services"</code> به آن‌ها می‌روند؛ با <code>scroll-behavior: smooth</code> نرم می‌روند. در صفحه‌ی کوچک، لینک‌ها پنهان‌اند و دکمه‌ی همبرگری کلاس <code>open</code> را toggle می‌کند. صفت <code>aria-expanded</code> وضعیت منو را به صفحه‌خوان می‌گوید.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>burger.addEventListener("click", () =&gt; {
+  const open = links.classList.toggle("open");
+  burger.setAttribute("aria-expanded", String(open));
+});</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: افکت تایپ بدون کتابخانه</h2></div><p>یک تابع که با <code>setTimeout</code> خودش را دوباره صدا می‌زند: هر بار یک حرف اضافه یا کم می‌کند و بسته به وضعیت (<code>deleting</code>) تأخیر را عوض می‌کند. کتابخانه‌ی Typed.js در بخش پلاگین‌ها همین کار را با یک خط انجام می‌دهد، ولی اینجا می‌فهمی چطور کار می‌کند.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>typed.textContent = word.slice(0, c);
+setTimeout(type, deleting ? 40 : 90);</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: انیمیشن با اسکرول</h2></div><p>کارت‌ها ابتدا شفاف و پایین‌ترند. با <code>IntersectionObserver</code> وقتی وارد دید شدند، کلاس <code>in</code> می‌گیرند و CSS با <code>transition</code> آن‌ها را بالا می‌آورد. شمارنده‌ها هم از <code>requestAnimationFrame</code> استفاده می‌کنند. بعد از اولین نمایش <code>unobserve</code> می‌زنیم تا انیمیشن تکرار نشود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>io.observe(card);
+// در callback: e.target.classList.add("in"); io.unobserve(e.target);</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>DOM، classList و رویدادها (درس‌های ۲۲ و ۲۴)</li><li><code>setTimeout</code> بازگشتی و <code>requestAnimationFrame</code> (درس ۲۶)</li><li>Regex و اعتبارسنجی فرم (درس ۱۵)</li><li>IntersectionObserver و scroll (درس‌های ۲۷ و ۳۶)</li><li>رشته: <code>slice</code> و <code>trim</code> (درس ۹)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">انیمیشن‌های سنگین با <code>scroll</code></div><p>انیمیشن را با CSS و IntersectionObserver بساز، نه با محاسبه در هر اسکرول.</p></div><div class="note warn"><div class="note-title">فراموش کردن کاربران بدون انیمیشن</div><p>برای کسانی که حرکت زیاد را در سیستم خاموش کرده‌اند، شرط <code>prefers-reduced-motion</code> را در CSS اضافه کن.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>بخش نمونه‌کار با فیلتر دسته‌بندی اضافه کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>از الگوی پروژه‌ی «جستجو و فیلتر منو» استفاده کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>فرم را واقعی کن: با Netlify Forms یا یک API ارسال کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>از <code>fetch</code> با <code>POST</code> و <code>FormData</code> استفاده کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>حالت تیره و روشن را از پروژه‌ی تم اضافه کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>متغیرهای رنگ و دکمه‌ی تغییر تم را کپی کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-one-page-site.zip" download>دانلود project-one-page-site.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-weather-app.html">→ پروژه‌ی برنامه‌ی آب‌وهوا</a><a href="project-calculator.html">پروژه‌ی ماشین حساب ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۵ · درس ۵ | POST، PUT، PATCH و DELETE</title><meta name="description" content="برای غیر از GET باید در گزینه‌های fetch سه چیز بدهی: method، headers (اعلام اینکه بدنه JSON است) و body که حتماً رشته است، پس با JSON.stringify می‌سازی‌اش.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/32-fetch-crud.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۵ · درس ۵ | POST، PUT، PATCH و DELETE"><meta property="og:description" content="برای غیر از GET باید در گزینه‌های fetch سه چیز بدهی: method، headers (اعلام اینکه بدنه JSON است) و body که حتماً رشته است، پس با JSON.stringify می‌سازی‌اش."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/32-fetch-crud.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۵ · درس ۵</span><h1>POST، PUT، PATCH و DELETE</h1><p>برای غیر از GET باید در گزینه‌های fetch سه چیز بدهی: <code>method</code>، <code>headers</code> (اعلام اینکه بدنه JSON است) و <code>body</code> که حتماً رشته است، پس با <code>JSON.stringify</code> می‌سازی‌اش.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">مقدمه</a></li><li><a href="#s2">تفاوت PUT و PATCH</a></li><li><a href="#s3">تابع کمکی تمیز برای همه‌ی متدها</a></li><li><a href="#s4">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>مقدمه</h2></div><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;button data-m="POST"&gt;POST&lt;/button&gt;
+&lt;button data-m="PUT"&gt;PUT&lt;/button&gt;
+&lt;button data-m="PATCH"&gt;PATCH&lt;/button&gt;
+&lt;button data-m="DELETE"&gt;DELETE&lt;/button&gt;
+&lt;pre id="o" style="direction:ltr;white-space:pre-wrap"&gt;&lt;/pre&gt;
+&lt;script&gt;
+const base = "https://jsonplaceholder.typicode.com/posts";
+const json = { "Content-Type": "application/json" };
+const calls = {
+  POST: () =&gt; fetch(base, { method: "POST", headers: json,
+    body: JSON.stringify({ title: "جدید", body: "متن", userId: 1 }) }),
+  PUT: () =&gt; fetch(base + "/1", { method: "PUT", headers: json,
+    body: JSON.stringify({ id: 1, title: "ویرایش کامل", body: "متن", userId: 1 }) }),
+  PATCH: () =&gt; fetch(base + "/1", { method: "PATCH", headers: json,
+    body: JSON.stringify({ title: "فقط عنوان" }) }),
+  DELETE: () =&gt; fetch(base + "/1", { method: "DELETE" }),
+};
+document.querySelectorAll("button").forEach((b) =&gt; {
+  b.onclick = async () =&gt; {
+    const o = document.getElementById("o");
+    o.textContent = "در حال ارسال...";
+    try {
+      const res = await calls[b.dataset.m]();
+      const data = await res.json();
+      o.textContent = res.status + " " + b.dataset.m + "\n" + JSON.stringify(data, null, 2);
+    } catch (e) {
+      o.textContent = "خطا: " + e.message;
+    }
+  };
+});
+&lt;/script&gt;</code></pre></div></div><div class="note tip"><div class="note-title">نکته</div><p>این API فقط شبیه‌سازی می‌کند: پاسخ موفق می‌دهد ولی چیزی ذخیره نمی‌کند. در پروژه‌ی واقعی، سرور خودت داده را در دیتابیس می‌نویسد.</p></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>تفاوت PUT و PATCH</h2></div><p><code>PUT</code> کل رکورد را با نسخه‌ی جدید جایگزین می‌کند و باید همه‌ی فیلدها را بفرستی. <code>PATCH</code> فقط فیلدهایی را که فرستاده‌ای تغییر می‌دهد.</p></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>تابع کمکی تمیز برای همه‌ی متدها</h2></div><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>کد</span><span class="demo-tag">js</span></div><pre><code>async function api(method, url, data) {
+  const res = await fetch(url, {
+    method,
+    headers: { "Content-Type": "application/json" },
+    body: data ? JSON.stringify(data) : undefined,
+  });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.status === 204 ? null : res.json();
+}
+
+// await api("POST", "/api/todos", { title: "درس جاوااسکریپت" });
+// await api("PATCH", "/api/todos/5", { done: true });
+// await api("DELETE", "/api/todos/5");</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>فرم ساده‌ای بساز که عنوان را با POST بفرستد و پاسخ را نشان دهد</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;input id="t" placeholder="عنوان"&gt;
+&lt;button id="b"&gt;ارسال&lt;/button&gt;
+&lt;p id="o"&gt;&lt;/p&gt;
+&lt;script&gt;
+document.getElementById("b").onclick = async () =&gt; {
+  const o = document.getElementById("o");
+  const title = document.getElementById("t").value.trim();
+  if (!title) { o.textContent = "عنوان را بنویس"; return; }
+  try {
+    const res = await fetch("https://jsonplaceholder.typicode.com/posts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, userId: 1 }),
+    });
+    const data = await res.json();
+    o.textContent = "ساخته شد با شناسه " + data.id;
+  } catch (e) { o.textContent = "خطا: " + e.message; }
+};
+&lt;/script&gt;</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="31-fetch-get.html">→ API و درخواست GET با Fetch</a><a href="33-axios-optimize.html">Axios و بهینه‌سازی درخواست‌ها ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

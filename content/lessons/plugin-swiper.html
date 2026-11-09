@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هدیه · درس ۷ | Swiper: اسلایدر لمسی حرفه‌ای</title><meta name="description" content="Swiper محبوب‌ترین کتابخانه‌ی اسلایدر است: لمسی، ریسپانسیو، با صفحه‌بندی، دکمه‌ها، پخش خودکار و افکت‌های مختلف. اسلایدر نظرات و تصاویر را خودت دستی ساختی؛ ح"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/plugin-swiper.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="هدیه · درس ۷ | Swiper: اسلایدر لمسی حرفه‌ای"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">هدیه · درس ۷</span><h1>Swiper: اسلایدر لمسی حرفه‌ای</h1><p>Swiper محبوب‌ترین کتابخانه‌ی اسلایدر است: لمسی، ریسپانسیو، با صفحه‌بندی، دکمه‌ها، پخش خودکار و افکت‌های مختلف. اسلایدر نظرات و تصاویر را خودت دستی ساختی؛ حالا می‌بینی همان‌ها با Swiper چقدر کوتاه می‌شوند.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">نصب</a></li><li><a href="#s2">ساختار و استفاده‌ی پایه</a></li><li><a href="#s3">گزینه‌های مهم</a></li><li><a href="#s4">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نصب</h2></div><p>در این صفحه برای اینکه نمونه‌ها بدون اینترنت و بدون وابستگی به CDN اجرا شوند، نسخه‌ی کتابخانه از خود سایت بارگیری می‌شود. در پروژه‌ی خودت یکی از این دو روش را به کار ببر:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>روش ۱: CDN (فقط چند تگ در HTML)</span><span class="demo-tag">html</span></div><pre><code>&lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.css"&gt;
+&lt;script src="https://cdn.jsdelivr.net/npm/swiper@11.2.10/swiper-bundle.min.js"&gt;&lt;/script&gt;</code></pre></div></div><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>روش ۲: npm (برای پروژه‌هایی که با Vite یا Webpack ساخته می‌شوند)</span><span class="demo-tag">txt</span></div><pre><code>npm install swiper@11</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>ساختار و استفاده‌ی پایه</h2></div><p>ساختار HTML سه لایه است: <code>.swiper</code> ← <code>.swiper-wrapper</code> ← چند <code>.swiper-slide</code>. برای راست‌چین بودن، صفت <code>dir="rtl"</code> را روی <code>.swiper</code> بگذار.</p><div class="demo demo-full" data-live data-bare data-h="280"><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;link rel="stylesheet" href="/assets/vendor/swiper-bundle.min.css"&gt;
+&lt;style&gt;
+  .swiper { width: 100%; height: 190px; }
+  .swiper-slide { display: grid; place-items: center; font-size: 24px; color: #1a1204; border-radius: 14px; }
+&lt;/style&gt;
+
+&lt;div class="swiper" dir="rtl"&gt;
+  &lt;div class="swiper-wrapper"&gt;
+    &lt;div class="swiper-slide" style="background:#fbbf24"&gt;اسلاید ۱&lt;/div&gt;
+    &lt;div class="swiper-slide" style="background:#fb923c"&gt;اسلاید ۲&lt;/div&gt;
+    &lt;div class="swiper-slide" style="background:#4ade80"&gt;اسلاید ۳&lt;/div&gt;
+    &lt;div class="swiper-slide" style="background:#60a5fa"&gt;اسلاید ۴&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="swiper-pagination"&gt;&lt;/div&gt;
+  &lt;div class="swiper-button-prev"&gt;&lt;/div&gt;
+  &lt;div class="swiper-button-next"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script src="/assets/vendor/swiper-bundle.min.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+new Swiper(".swiper", {
+  loop: true,
+  spaceBetween: 12,
+  autoplay: { delay: 2500, disableOnInteraction: false },
+  pagination: { el: ".swiper-pagination", clickable: true },
+  navigation: { nextEl: ".swiper-button-next", prevEl: ".swiper-button-prev" },
+  breakpoints: { 600: { slidesPerView: 2 } },     // از ۶۰۰ پیکسل به بالا، ۲ اسلاید
+});
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>گزینه‌های مهم</h2></div><ul><li><code>slidesPerView</code> و <code>spaceBetween</code>: تعداد اسلاید در دید و فاصله</li><li><code>loop</code>: چرخش بی‌پایان</li><li><code>autoplay</code>: <code>{ delay, disableOnInteraction }</code></li><li><code>pagination</code> و <code>navigation</code>: نقطه‌ها و فلش‌ها</li><li><code>breakpoints</code>: تنظیم متفاوت برای عرض‌های مختلف (ریسپانسیو)</li><li><code>effect</code>: <code>"fade"</code>، <code>"cube"</code>، <code>"coverflow"</code> (برخی افکت‌ها ماژول جدا لازم دارند؛ نسخه‌ی bundle همه را دارد)</li></ul><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>رویدادها و کنترل</span><span class="demo-tag">js</span></div><pre><code>const swiper = new Swiper(".swiper", { slidesPerView: 1 });
+swiper.on("slideChange", () =&gt; console.log("اسلاید فعال:", swiper.realIndex));
+swiper.slideTo(2);      // رفتن به اسلاید سوم
+swiper.autoplay.stop(); // توقف پخش خودکار</code></pre></div></div><div class="note info"><div class="note-title">چرا اول دستی ساختیم؟</div><p>پروژه‌ی «اسلایدر نظرات» را که ~۴۰ خط جاوااسکریپت بود با Swiper حدود ۱۰ خط می‌نویسی. ولی دانستن اینکه زیر کار چه می‌گذرد (index و translateX) همان چیزی است که تو را از کسی که فقط کتابخانه صدا می‌زند جدا می‌کند.</p></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>اسلایدر نظرات دانشجوها را با Swiper بازنویسی کن (۳ اسلاید، نقطه‌ها و پخش خودکار).</p><details class="ex-ans"><summary>راهنمایی</summary><p>همان ساختار <code>.swiper</code> را کپی کن و فقط <code>pagination</code> و <code>autoplay</code> را بده.</p></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>با <code>breakpoints</code> در موبایل ۱ اسلاید، در تبلت ۲ و در دسکتاپ ۳ اسلاید نشان بده.</p><details class="ex-ans"><summary>راهنمایی</summary><p>کلیدها عرض صفحه و مقدارها <code>{ slidesPerView }</code> هستند.</p></details></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="plugin-videojs.html">→ Video.js: پخش‌کننده‌ی ویدیو</a><a href="career-portfolio.html">ساخت پورتفولیو و GitHub ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

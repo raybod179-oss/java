@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۱ · درس ۴ | عملگرها</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/04-operators.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۱ · درس ۴ | عملگرها"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/04-operators.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۱ · درس ۴</span><h1>عملگرها</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">حسابی و انتسابی</a></li><li><a href="#s2">مقایسه‌ای: == و ===</a></li><li><a href="#s3">منطقی و Nullish</a></li><li><a href="#s4">Prefix و Postfix</a></li><li><a href="#s5">چسباندن متن و NaN</a></li><li><a href="#s6">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>حسابی و انتسابی</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log(7 + 3, 7 - 3, 7 * 3, 7 / 2);
+console.log(7 % 3);   // باقیمانده: 1
+console.log(2 ** 5);  // توان: 32
+let x = 10;
+x += 5; x *= 2;
+console.log(x);       // 30</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>مقایسه‌ای: == و ===</h2></div><p>علامت <code>==</code> قبل از مقایسه نوع‌ها را تبدیل می‌کند و نتیجه‌های عجیب می‌دهد. در تمام پروژه‌ها <code>===</code> بنویس.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log(5 == "5");   // true
+console.log(5 === "5");  // false
+console.log(10 &gt; 3, 10 &lt;= 3, 4 !== 5);</code></pre></div></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>منطقی و Nullish</h2></div><p><code>&amp;&amp;</code> یعنی و، <code>||</code> یعنی یا، <code>!</code> یعنی نقیض. عملگر <code>??</code> فقط برای null و undefined مقدار پیش‌فرض می‌دهد.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const age = 20, hasId = true;
+console.log(age &gt;= 18 &amp;&amp; hasId);
+console.log(0 || 100);   // 100
+console.log(0 ?? 100);   // 0
+console.log(null ?? "پیش‌فرض");</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>Prefix و Postfix</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>let a = 5;
+console.log(a++); // 5 و بعد a می‌شود 6
+console.log(a);   // 6
+console.log(++a); // اول 7 می‌شود، بعد چاپ</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>چسباندن متن و NaN</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log("سلام " + "دنیا");
+const n = "Rayvo";
+console.log(`خوش آمدی ${n}`);   // Template Literal
+console.log("abc" * 2);          // NaN
+console.log(Number.isNaN("abc" * 2));</code></pre></div></div><div class="note warn"><div class="note-title">نکته</div><p><code>NaN === NaN</code> برابر false است. برای تشخیص آن از <code>Number.isNaN</code> استفاده کن.</p></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>بررسی کن عدد ۱۴ زوج است یا نه</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log(14 % 2 === 0);</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>مقدار username اگر خالی بود، "مهمان" چاپ شود</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const username = null;
+console.log(username ?? "مهمان");</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="03-datatypes.html">→ انواع داده</a><a href="05-conditions.html">شرط‌ها: if و switch ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

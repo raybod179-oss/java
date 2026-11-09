@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۱ · درس ۸ | Scope، Hoisting و Closure</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/08-scope.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۱ · درس ۸ | Scope، Hoisting و Closure"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/08-scope.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۱ · درس ۸</span><h1>Scope، Hoisting و Closure</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">Scope یعنی محدوده‌ی دیده شدن</a></li><li><a href="#s2">Hoisting</a></li><li><a href="#s3">Closure</a></li><li><a href="#s4">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>Scope یعنی محدوده‌ی دیده شدن</h2></div><p>متغیری که داخل <code>{ }</code> با let یا const تعریف شود فقط همان‌جا زندگی می‌کند. متغیر بیرونی را همه جا می‌شود دید.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const global = "بیرونی";
+function test() {
+  const local = "داخلی";
+  console.log(global, local);
+}
+test();
+try { console.log(local); } catch (e) { console.log("خطا:", e.message); }</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>Hoisting</h2></div><p>جاوااسکریپت قبل از اجرا، تعریف‌ها را بالا می‌کشد. تابع‌های معمولی را می‌شود قبل از تعریف صدا زد، اما let و const قبل از تعریف خطا می‌دهند و var مقدار undefined دارد.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log(hello());        // کار می‌کند
+function hello() { return "سلام"; }
+console.log(x);              // undefined
+var x = 5;
+try { console.log(y); } catch (e) { console.log("خطا:", e.name); }
+let y = 5;</code></pre></div></div><div class="note tip"><div class="note-title">توصیه</div><p>از <code>var</code> استفاده نکن. let و const رفتار قابل پیش‌بینی‌تری دارند.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>Closure</h2></div><p>تابع داخلی همیشه به متغیرهای تابع بیرونی خود دسترسی دارد، حتی بعد از تمام شدن تابع بیرونی. این روش برای ساخت متغیر خصوصی عالی است.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>function makeCounter() {
+  let count = 0;
+  return () =&gt; ++count;
+}
+const c1 = makeCounter();
+console.log(c1(), c1(), c1());   // 1 2 3
+const c2 = makeCounter();
+console.log(c2());               // 1 (مستقل)</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>شمارنده‌ای بساز که با هر بار صدا زدن ۲ تا اضافه شود</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>function counter() {
+  let n = 0;
+  return () =&gt; (n += 2);
+}
+const c = counter();
+console.log(c(), c(), c());</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>چالش: تابعی بساز که اسم را یک بار بگیرد و بعد با هر صدا زدن «سلام اسم» برگرداند</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const greeter = (name) =&gt; () =&gt; `سلام ${name}`;
+console.log(greeter("Rayvo")());</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="07-functions.html">→ توابع و Arrow Function</a><a href="09-strings.html">متدهای String ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

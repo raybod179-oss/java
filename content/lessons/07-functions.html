@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۱ · درس ۷ | توابع و Arrow Function</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/07-functions.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۱ · درس ۷ | توابع و Arrow Function"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/07-functions.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۱ · درس ۷</span><h1>توابع و Arrow Function</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">تابع چیست؟</a></li><li><a href="#s2">Function Expression و Arrow</a></li><li><a href="#s3">Rest Operator</a></li><li><a href="#s4">IIFE</a></li><li><a href="#s5">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>تابع چیست؟</h2></div><p>بلوکی از کد که اسم دارد و هر وقت صدایش کنی اجرا می‌شود. با ورودی (پارامتر) کار می‌کند و با <code>return</code> نتیجه می‌دهد.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>function add(a, b) {
+  return a + b;
+}
+console.log(add(2, 3));
+
+function greet(name = "مهمان") {   // مقدار پیش‌فرض
+  return `سلام ${name}`;
+}
+console.log(greet(), greet("Rayvo"));</code></pre></div></div><div class="note warn"><div class="note-title">نکته</div><p>هر کدی بعد از <code>return</code> اجرا نمی‌شود. تابعی که return ندارد مقدار undefined برمی‌گرداند.</p></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>Function Expression و Arrow</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const mul = function (a, b) { return a * b; };
+const sq = (n) =&gt; n * n;          // Arrow Function
+const hi = () =&gt; "سلام";
+console.log(mul(3, 4), sq(5), hi());</code></pre></div></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>Rest Operator</h2></div><p>گرفتن تعداد نامحدود ورودی داخل یک آرایه.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const sum = (...nums) =&gt; nums.reduce((a, b) =&gt; a + b, 0);
+console.log(sum(1, 2, 3, 4));</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>IIFE</h2></div><p>تابعی که همان لحظه‌ی تعریف اجرا می‌شود و متغیرهایش بیرون دیده نمی‌شوند.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>(function () {
+  const secret = "فقط اینجا";
+  console.log(secret);
+})();</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>تابعی بنویس که عدد بگیرد و بگوید زوج است یا فرد</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const parity = (n) =&gt; (n % 2 === 0 ? "زوج" : "فرد");
+console.log(parity(7));</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>تابعی که میانگین هر تعداد عدد را حساب کند</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const avg = (...n) =&gt; n.reduce((a, b) =&gt; a + b, 0) / n.length;
+console.log(avg(10, 20, 30));</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="06-loops.html">→ حلقه‌ها</a><a href="08-scope.html">Scope، Hoisting و Closure ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

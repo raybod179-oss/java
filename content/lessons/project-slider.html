@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۶ | پروژه‌ی اسلایدر نظرات</title><meta name="description" content="اسلایدر نظرات مشتری در تقریباً هر صفحه‌ی فروش هست. در این پروژه اسلایدری کامل می‌سازی: دکمه‌های قبلی و بعدی، نقطه‌های راهنما، پخش خودکار که با رفتن موس روی"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-slider.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۶ | پروژه‌ی اسلایدر نظرات"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۶</span><h1>پروژه‌ی اسلایدر نظرات</h1><p>اسلایدر نظرات مشتری در تقریباً هر صفحه‌ی فروش هست. در این پروژه اسلایدری کامل می‌سازی: دکمه‌های قبلی و بعدی، نقطه‌های راهنما، پخش خودکار که با رفتن موس روی آن می‌ایستد، کلیدهای جهت‌دار و کشیدن با انگشت روی موبایل. همه‌ی منطق در یک متغیر <code>index</code> خلاصه می‌شود.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: ردیف اسلایدها</a></li><li><a href="#s4">قدم ۲: یک متغیر، همه‌ی منطق</a></li><li><a href="#s5">قدم ۳: پخش خودکار و لمس</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="380"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.slider{width:min(460px,100%);text-align:center}
+.viewport{overflow:hidden;border:1px solid var(--line);border-radius:20px;background:var(--card)}
+.track{display:flex;transition:transform .45s ease}
+.slide{flex:0 0 100%;padding:28px 24px}
+.slide p{margin:0 0 14px;line-height:2}
+.slide b{color:var(--a)}
+.controls{display:flex;justify-content:center;align-items:center;gap:14px;margin-top:14px}
+.dots{display:flex;gap:8px}
+.dot{width:10px;height:10px;padding:0;border-radius:50%;background:var(--line);border:0}
+.dot.active{background:var(--a);box-shadow:0 0 10px var(--a)}
+&lt;/style&gt;
+
+&lt;div class="slider" id="slider" aria-roledescription="carousel" aria-label="نظرات دانشجوها"&gt;
+  &lt;div class="viewport"&gt;
+    &lt;div class="track" id="track"&gt;
+      &lt;article class="slide"&gt;&lt;p&gt;«اول مفهوم را می‌فهمم و بعد کد می‌نویسم. دکمه‌ی اجرا عالی بود.»&lt;/p&gt;&lt;b&gt;علی، دانشجوی دوره&lt;/b&gt;&lt;/article&gt;
+      &lt;article class="slide"&gt;&lt;p&gt;«تمرین‌ها دقیقاً همان چیزی بود که لازم داشتم.»&lt;/p&gt;&lt;b&gt;سارا، برنامه‌نویس جونیور&lt;/b&gt;&lt;/article&gt;
+      &lt;article class="slide"&gt;&lt;p&gt;«پروژه‌ها باعث شد بالاخره پورتفولیو بسازم.»&lt;/p&gt;&lt;b&gt;رضا، دانشجو&lt;/b&gt;&lt;/article&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="controls"&gt;
+    &lt;button id="next" aria-label="بعدی"&gt;→&lt;/button&gt;
+    &lt;div class="dots" id="dots"&gt;&lt;/div&gt;
+    &lt;button id="prev" aria-label="قبلی"&gt;←&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const slider = document.getElementById("slider");
+const track = document.getElementById("track");
+const dotsBox = document.getElementById("dots");
+const slides = track.children;
+let index = 0;
+let timer = null;
+
+// ساخت نقطه‌ها از روی تعداد اسلایدها
+[...slides].forEach((_, i) =&gt; {
+  const dot = document.createElement("button");
+  dot.className = "dot";
+  dot.setAttribute("aria-label", "اسلاید " + (i + 1));
+  dot.addEventListener("click", () =&gt; goTo(i));
+  dotsBox.append(dot);
+});
+
+function goTo(i) {
+  index = (i + slides.length) % slides.length;       // چرخش بی‌نهایت
+  track.style.transform = "translateX(" + index * 100 + "%)";   // در صفحه‌ی راست‌چین مثبت است
+  [...dotsBox.children].forEach((d, n) =&gt; d.classList.toggle("active", n === index));
+}
+const next = () =&gt; goTo(index + 1);
+const prev = () =&gt; goTo(index - 1);
+
+function play() { stop(); timer = setInterval(next, 4000); }
+function stop() { clearInterval(timer); }
+
+document.getElementById("next").addEventListener("click", next);
+document.getElementById("prev").addEventListener("click", prev);
+slider.addEventListener("mouseenter", stop);          // موس روی اسلایدر: توقف
+slider.addEventListener("mouseleave", play);
+document.addEventListener("keydown", (e) =&gt; {
+  if (e.key === "ArrowLeft") next();                  // راست‌چین: چپ یعنی بعدی
+  if (e.key === "ArrowRight") prev();
+});
+
+// کشیدن با انگشت
+let startX = 0;
+slider.addEventListener("touchstart", (e) =&gt; { startX = e.touches[0].clientX; }, { passive: true });
+slider.addEventListener("touchend", (e) =&gt; {
+  const dx = e.changedTouches[0].clientX - startX;
+  if (Math.abs(dx) &gt; 40) (dx &lt; 0 ? next : prev)();
+});
+
+goTo(0);
+play();
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>slider/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: ردیف اسلایدها</h2></div><p>همه‌ی اسلایدها کنار هم در یک <code>track</code> افقی هستند و هر کدام ۱۰۰٪ عرض دارند (<code>flex: 0 0 100%</code>). قاب بیرونی با <code>overflow:hidden</code> فقط یکی را نشان می‌دهد. برای عوض کردن اسلاید، کل <code>track</code> را با <code>translateX</code> می‌لغزانیم. چون صفحه راست‌چین است، جهت لغزش مثبت است.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>CSS</span><span class="demo-tag">css</span></div><pre><code>.viewport { overflow: hidden; }
+.track { display: flex; transition: transform .45s ease; }
+.slide { flex: 0 0 100%; }</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: یک متغیر، همه‌ی منطق</h2></div><p>تنها state برنامه <code>index</code> است. تابع <code>goTo</code> آن را با باقیمانده (<code>%</code>) به محدوده‌ی درست برمی‌گرداند؛ بنابراین از آخرین اسلاید به اولی می‌رود و برعکس. همین تابع هم از دکمه‌ها، هم از نقطه‌ها، هم از کیبورد و هم از پخش خودکار صدا زده می‌شود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>function goTo(i) {
+  index = (i + slides.length) % slides.length;
+  track.style.transform = "translateX(" + index * 100 + "%)";
+}</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: پخش خودکار و لمس</h2></div><p>با <code>setInterval</code> هر ۴ ثانیه یک اسلاید جلو می‌رویم و وقتی موس روی اسلایدر است <code>clearInterval</code> می‌کنیم تا کاربر بتواند بخواند. برای موبایل، فاصله‌ی افقی بین <code>touchstart</code> و <code>touchend</code> را حساب می‌کنیم؛ اگر بیشتر از ۴۰ پیکسل بود، یعنی کاربر کشیده است.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>slider.addEventListener("mouseenter", stop);
+slider.addEventListener("mouseleave", play);</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>آرایه، Spread و <code>forEach</code> (درس‌های ۱۱ تا ۱۳)</li><li>ساخت المنت با <code>createElement</code> (درس ۲۳)</li><li><code>setInterval</code> و <code>clearInterval</code> (درس ۲۶)</li><li>رویدادهای موس، کیبورد و لمس (درس ۲۴)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">عدد منفی در باقیمانده</div><p>در جاوااسکریپت <code>-1 % 3</code> برابر <code>-1</code> است، نه ۲. برای همین قبل از <code>%</code> طول آرایه را اضافه می‌کنیم.</p></div><div class="note warn"><div class="note-title">تایمر چندباره</div><p>اگر قبل از <code>setInterval</code> تایمر قبلی را پاک نکنی، با هر mouseleave یک تایمر اضافه می‌شود و اسلایدر دیوانه‌وار می‌چرخد.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>نوار پیشرفت زیر اسلایدر بساز که زمان باقی‌مانده تا اسلاید بعد را نشان بدهد.</p><details class="ex-ans"><summary>راهنمایی</summary><p>با <code>@keyframes</code> یا <code>requestAnimationFrame</code> عرض یک نوار را از ۰ تا ۱۰۰٪ ببر.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>اسلایدها را از یک آرایه‌ی JSON بساز.</p><details class="ex-ans"><summary>راهنمایی</summary><p>با <code>map</code> رشته‌ی HTML بساز و با <code>innerHTML</code> در <code>track</code> بگذار (متن را امن کن!).</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>وقتی تب مرورگر پنهان است، پخش خودکار متوقف شود.</p><details class="ex-ans"><summary>راهنمایی</summary><p>رویداد <code>visibilitychange</code> و <code>document.hidden</code> را بررسی کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-slider.zip" download>دانلود project-slider.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-countdown.html">→ پروژه‌ی شمارش معکوس سال نو</a><a href="project-dino.html">پروژه‌ی بازی دایناسور ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

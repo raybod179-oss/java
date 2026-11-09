@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۱۱ | پروژه‌ی API محلی با JSON</title><meta name="description" content="قبل از رفتن سراغ API واقعی، با یک «API محلی» کار می‌کنیم: داده‌ها در یک آرایه‌ی JSON هستند و با fetch و async/await خوانده می‌شوند، درست مثل سرور واقعی. لی"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-local-json.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۱۱ | پروژه‌ی API محلی با JSON"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۱۱</span><h1>پروژه‌ی API محلی با JSON</h1><p>قبل از رفتن سراغ API واقعی، با یک «API محلی» کار می‌کنیم: داده‌ها در یک آرایه‌ی JSON هستند و با <code>fetch</code> و <code>async/await</code> خوانده می‌شوند، درست مثل سرور واقعی. لیست محصولات با جستجو، فیلتر دسته و حالت‌های loading و خطا می‌سازی.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: داده‌ی JSON</a></li><li><a href="#s4">قدم ۲: خواندن با fetch و مدیریت خطا</a></li><li><a href="#s5">قدم ۳: فیلتر و رندر</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="480"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+body{display:block}
+.app{max-width:520px;margin:auto}
+h1{font-size:20px;margin:0 0 10px}
+.tools{display:flex;gap:8px;margin-bottom:12px}
+input,select{font:inherit;padding:9px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+input{flex:1}
+.list{display:grid;gap:8px}
+.item{display:flex;justify-content:space-between;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.item small{color:var(--mut)}.price{color:var(--a);font-weight:700}
+.state{text-align:center;color:var(--mut);padding:24px}
+&lt;/style&gt;
+
+&lt;div class="app"&gt;
+  &lt;h1&gt;فروشگاه کوچک (API محلی)&lt;/h1&gt;
+  &lt;div class="tools"&gt;
+    &lt;input id="q" placeholder="جستجو…" aria-label="جستجو"&gt;
+    &lt;select id="cat" aria-label="دسته"&gt;&lt;option value=""&gt;همه&lt;/option&gt;&lt;/select&gt;
+  &lt;/div&gt;
+  &lt;div class="list" id="list"&gt;&lt;/div&gt;
+  &lt;p class="state" id="state"&gt;در حال بارگذاری…&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+// در پروژه‌ی واقعی این داده در فایل products.json است و با fetch("products.json") خوانده می‌شود.
+// اینجا آن را با Blob شبیه‌سازی می‌کنیم تا همین‌جا هم بدون سرور کار کند.
+const DATA = [
+  { id: 1, name: "کیبورد مکانیکی", cat: "لوازم", price: 1800000 },
+  { id: 2, name: "ماوس بی‌سیم", cat: "لوازم", price: 650000 },
+  { id: 3, name: "کتاب جاوااسکریپت", cat: "کتاب", price: 240000 },
+  { id: 4, name: "کتاب طراحی وب", cat: "کتاب", price: 310000 },
+  { id: 5, name: "پایه‌ی لپ‌تاپ", cat: "لوازم", price: 420000 },
+];
+const url = URL.createObjectURL(new Blob([JSON.stringify(DATA)], { type: "application/json" }));
+
+const list = document.getElementById("list");
+const state = document.getElementById("state");
+const q = document.getElementById("q");
+const cat = document.getElementById("cat");
+let products = [];
+
+async function load() {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    products = await res.json();
+    [...new Set(products.map((p) =&gt; p.cat))].forEach((c) =&gt; cat.append(new Option(c, c)));
+    render();
+  } catch (err) {
+    state.textContent = "خطا در دریافت داده: " + err.message;
+  }
+}
+
+function render() {
+  const text = q.value.trim();
+  const shown = products.filter((p) =&gt; p.name.includes(text) &amp;&amp; (!cat.value || p.cat === cat.value));
+  list.innerHTML = "";
+  shown.forEach((p) =&gt; {
+    const row = document.createElement("div");
+    row.className = "item";
+    row.innerHTML = "&lt;div&gt;&lt;b&gt;&lt;/b&gt;&lt;br&gt;&lt;small&gt;&lt;/small&gt;&lt;/div&gt;&lt;span class='price'&gt;&lt;/span&gt;";
+    row.querySelector("b").textContent = p.name;                 // textContent: امن در برابر XSS
+    row.querySelector("small").textContent = p.cat;
+    row.querySelector(".price").textContent = p.price.toLocaleString("fa-IR") + " تومان";
+    list.append(row);
+  });
+  state.textContent = shown.length ? "" : "موردی پیدا نشد";
+}
+
+q.addEventListener("input", render);
+cat.addEventListener("change", render);
+load();
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>local-json/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: داده‌ی JSON</h2></div><p>JSON یک آرایه از آبجکت‌هاست و قوانینش سخت‌گیرانه است: کلیدها با دابل‌کوتیشن و بدون ویرگول آخر. در پروژه‌ی دانلودی، همین داده در فایلی جدا به نام <code>products.json</code> است. اینجا برای اینکه پیش‌نمایش بدون سرور کار کند، با <code>Blob</code> یک فایل JSON ساختگی در حافظه می‌سازیم؛ <code>fetch</code> دقیقاً مثل فایل واقعی آن را می‌خواند.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const DATA = [{ id: 1, name: "کیبورد", cat: "لوازم", price: 1800000 }];
+const url = URL.createObjectURL(new Blob([JSON.stringify(DATA)], { type: "application/json" }));</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: خواندن با fetch و مدیریت خطا</h2></div><p>الگوی استاندارد: <code>await fetch</code>، چک کردن <code>res.ok</code>، <code>await res.json()</code> و همه‌ی این‌ها داخل <code>try/catch</code>. اگر خطایی بیاید، به‌جای خالی ماندن صفحه، پیام خطا نشان می‌دهیم. دسته‌ها را هم با <code>Set</code> و <code>map</code> از خود داده می‌سازیم (بدون تکرار).</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const res = await fetch(url);
+if (!res.ok) throw new Error("HTTP " + res.status);
+products = await res.json();</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: فیلتر و رندر</h2></div><p>تابع <code>render</code> هر بار لیست را از صفر می‌سازد: اول <code>filter</code> با جستجو و دسته، بعد ساخت المنت‌ها. متن محصول را با <code>textContent</code> می‌گذاریم، نه <code>innerHTML</code>؛ اگر داده روزی از کاربر بیاید، تزریق کد (XSS) ممکن نمی‌شود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const shown = products.filter((p) =&gt; p.name.includes(text) &amp;&amp; (!cat.value || p.cat === cat.value));</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>JSON و قوانین آن (درس ۲۷)</li><li><code>async/await</code> و <code>try/catch</code> (درس ۳۰)</li><li>Fetch (درس ۳۱)</li><li><code>filter</code>، <code>map</code> و <code>Set</code> (درس‌های ۱۲ و ۱۴)</li><li>ساخت المنت و امنیت <code>textContent</code> (درس‌های ۲۲ و ۲۳)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">باز کردن index.html مستقیم و خطای fetch</div><p>مرورگر اجازه‌ی خواندن فایل با <code>file://</code> را نمی‌دهد. برای <code>fetch("products.json")</code> حتماً با Live Server یا یک سرور محلی اجرا کن.</p></div><div class="note warn"><div class="note-title">فراموش کردن <code>await res.json()</code></div><p>بدون <code>await</code>، به‌جای داده یک Promise می‌گیری و <code>products.filter</code> خطا می‌دهد.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>مرتب‌سازی بر اساس قیمت (ارزان به گران و برعکس) اضافه کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>از <code>toSorted</code> و یک <code>select</code> دیگر استفاده کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>حالت «در حال بارگذاری» را با یک اسکلت خاکستری (skeleton) بساز.</p><details class="ex-ans"><summary>راهنمایی</summary><p>قبل از <code>await</code> چند div با انیمیشن <code>pulse</code> نمایش بده.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>داده را در فایل جدا <code>products.json</code> بگذار و با Live Server بخوان.</p><details class="ex-ans"><summary>راهنمایی</summary><p>همان‌طور که در README پروژه نوشته شده، آدرس را عوض کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-local-json.zip" download>دانلود project-local-json.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-form-validation.html">→ پروژه‌ی اعتبارسنجی فرم</a><a href="project-real-api.html">پروژه‌ی API واقعی با Fetch ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۱ · درس ۳ | انواع داده</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/03-datatypes.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۱ · درس ۳ | انواع داده"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/03-datatypes.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۱ · درس ۳</span><h1>انواع داده</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">انواع اصلی</a></li><li><a href="#s2">آرایه</a></li><li><a href="#s3">آبجکت</a></li><li><a href="#s4">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>انواع اصلی</h2></div><p>هر مقدار در جاوااسکریپت یک نوع دارد. با <code>typeof</code> نوع را می‌پرسی.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log(typeof "سلام");   // string
+console.log(typeof 42);       // number
+console.log(typeof true);     // boolean
+console.log(typeof undefined);// undefined
+console.log(typeof null);     // object (یک باگ قدیمی زبان)
+console.log(typeof 10n);      // bigint</code></pre></div></div><p><b>string</b> متن است، <b>number</b> عدد صحیح و اعشاری، <b>boolean</b> فقط true یا false، <b>undefined</b> یعنی مقدار هنوز داده نشده و <b>null</b> یعنی عمداً خالی است.</p></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>آرایه</h2></div><p>لیست مرتب از مقدارها. شماره‌ی اندیس از صفر شروع می‌شود.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const fruits = ["سیب", "موز", "انار"];
+console.log(fruits[0]);
+console.log(fruits.length);
+fruits.push("گیلاس");
+console.log(fruits);</code></pre></div></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>آبجکت</h2></div><p>مجموعه‌ای از جفت‌های کلید و مقدار، مناسب برای توصیف یک چیز واقعی مثل کاربر یا محصول.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const user = { name: "Sara", age: 24, isAdmin: false };
+console.log(user.name);
+user.city = "Shiraz";
+console.log(user["city"]);
+console.log(user);</code></pre></div></div><div class="note warn"><div class="note-title">اشتباه رایج</div><p>آرایه هم از نوع object است، پس <code>typeof [] </code> برابر object می‌شود. برای تشخیص آرایه از <code>Array.isArray(x)</code> استفاده کن.</p></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>آبجکتی از یک محصول با name و price بساز و قیمت را چاپ کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const product = { name: "کتاب", price: 90000 };
+console.log(product.price);</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>آرایه‌ای از ۴ عدد بساز و آخرین عضو را بدون شماره‌ی ثابت چاپ کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const nums = [4, 8, 15, 16];
+console.log(nums[nums.length - 1]);</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۳</div><p>چالش: خروجی typeof null و Array.isArray([]) را پیش‌بینی کن، بعد اجرا کن</p><details class="ex-ans"><summary>راهنمایی</summary><p>object و true.</p></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="02-variables.html">→ متغیرها: let و const</a><a href="04-operators.html">عملگرها ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۹ | پروژه‌ی فرم ورود و ثبت‌نام</title><meta name="description" content="فرم ورود و ثبت‌نام با تعویض نرم بین دو حالت، نمایش و پنهان کردن رمز، نمایش خطاها و پیام موفقیت. این پروژه پایه‌ی کار با فرم است: submit، preventDefault و F"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-auth-form.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۹ | پروژه‌ی فرم ورود و ثبت‌نام"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۹</span><h1>پروژه‌ی فرم ورود و ثبت‌نام</h1><p>فرم ورود و ثبت‌نام با تعویض نرم بین دو حالت، نمایش و پنهان کردن رمز، نمایش خطاها و پیام موفقیت. این پروژه پایه‌ی کار با فرم است: <code>submit</code>، <code>preventDefault</code> و <code>FormData</code>. اعتبارسنجی کامل را در پروژه‌ی بعد تکمیل می‌کنیم.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: ساختار فرم</a></li><li><a href="#s4">قدم ۲: دو حالت با یک فرم</a></li><li><a href="#s5">قدم ۳: خواندن فرم با FormData</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="420"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.card{width:min(380px,100%);background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;background:var(--bg);padding:5px;border-radius:14px;margin-bottom:18px}
+.tabs button{border:0;background:none;padding:9px}
+.tabs button.on{background:var(--a);color:#1a1204;font-weight:700}
+label{display:block;margin:12px 0 4px;font-size:14px;color:var(--mut)}
+.field{position:relative}
+input{width:100%;font:inherit;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--text);direction:ltr;text-align:left}
+input:focus{outline:2px solid var(--a);outline-offset:1px}
+.eye{position:absolute;left:6px;top:50%;transform:translateY(-50%);padding:4px 8px;font-size:12px;border:0;background:none}
+.msg{min-height:1.6em;margin:12px 0 0;font-size:14px}.msg.err{color:#fb7185}.msg.ok{color:#4ade80}
+.go{width:100%;margin-top:10px;background:var(--a);color:#1a1204;font-weight:700;border-color:var(--a)}
+[hidden]{display:none!important}
+&lt;/style&gt;
+
+&lt;main class="card"&gt;
+  &lt;div class="tabs" role="tablist"&gt;
+    &lt;button type="button" id="tab-login" class="on" role="tab"&gt;ورود&lt;/button&gt;
+    &lt;button type="button" id="tab-register" role="tab"&gt;ثبت‌نام&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;form id="form" novalidate&gt;
+    &lt;div id="name-box" hidden&gt;&lt;label for="name"&gt;نام&lt;/label&gt;&lt;input id="name" name="name" autocomplete="name"&gt;&lt;/div&gt;
+    &lt;label for="email"&gt;ایمیل&lt;/label&gt;&lt;input id="email" name="email" type="email" autocomplete="email"&gt;
+    &lt;label for="pass"&gt;رمز عبور&lt;/label&gt;
+    &lt;div class="field"&gt;&lt;input id="pass" name="pass" type="password" autocomplete="current-password"&gt;&lt;button type="button" class="eye" id="eye"&gt;نمایش&lt;/button&gt;&lt;/div&gt;
+    &lt;p class="msg" id="msg" role="alert"&gt;&lt;/p&gt;
+    &lt;button class="go" id="go"&gt;ورود&lt;/button&gt;
+  &lt;/form&gt;
+&lt;/main&gt;
+
+&lt;script&gt;
+const form = document.getElementById("form");
+const msg = document.getElementById("msg");
+const nameBox = document.getElementById("name-box");
+const pass = document.getElementById("pass");
+const go = document.getElementById("go");
+let mode = "login";                                   // login | register
+
+function setMode(m) {
+  mode = m;
+  document.getElementById("tab-login").classList.toggle("on", m === "login");
+  document.getElementById("tab-register").classList.toggle("on", m === "register");
+  nameBox.hidden = m === "login";
+  go.textContent = m === "login" ? "ورود" : "ساخت حساب";
+  pass.autocomplete = m === "login" ? "current-password" : "new-password";
+  show("", "");
+}
+function show(text, type) { msg.textContent = text; msg.className = "msg " + type; }
+
+document.getElementById("tab-login").addEventListener("click", () =&gt; setMode("login"));
+document.getElementById("tab-register").addEventListener("click", () =&gt; setMode("register"));
+document.getElementById("eye").addEventListener("click", (e) =&gt; {
+  const hidden = pass.type === "password";
+  pass.type = hidden ? "text" : "password";
+  e.target.textContent = hidden ? "پنهان" : "نمایش";
+});
+
+form.addEventListener("submit", (e) =&gt; {
+  e.preventDefault();                                  // جلوی رفرش صفحه
+  const data = Object.fromEntries(new FormData(form)); // همه‌ی فیلدها در یک آبجکت
+  if (mode === "register" &amp;&amp; !data.name.trim()) return show("نام را وارد کن", "err");
+  if (!data.email.includes("@")) return show("ایمیل معتبر نیست", "err");
+  if (data.pass.length &lt; 6) return show("رمز حداقل ۶ کاراکتر باشد", "err");
+  show(mode === "login" ? "ورود موفق بود ✓" : "حساب ساخته شد ✓", "ok");
+});
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>auth-form/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: ساختار فرم</h2></div><p>هر فیلد یک <code>label</code> با صفت <code>for</code> دارد تا با کلیک روی متن، فیلد فوکوس بگیرد. به <code>form</code> صفت <code>novalidate</code> داده‌ایم تا اعتبارسنجی مرورگر دخالت نکند و پیام‌ها را خودمان با ظاهر دلخواه نشان بدهیم. صفت <code>autocomplete</code> به مرورگر کمک می‌کند رمز را پیشنهاد بدهد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>HTML</span><span class="demo-tag">html</span></div><pre><code>&lt;form id="form" novalidate&gt;
+  &lt;label for="email"&gt;ایمیل&lt;/label&gt;
+  &lt;input id="email" name="email" type="email"&gt;
+&lt;/form&gt;</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: دو حالت با یک فرم</h2></div><p>به‌جای دو فرم جدا، یک متغیر <code>mode</code> نگه می‌داریم. تابع <code>setMode</code> فقط چند چیز را عوض می‌کند: فعال بودن تب، نمایش فیلد نام و متن دکمه. صفت <code>hidden</code> ساده‌ترین راه پنهان کردن است.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>function setMode(m) {
+  mode = m;
+  nameBox.hidden = m === "login";
+  go.textContent = m === "login" ? "ورود" : "ساخت حساب";
+}</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: خواندن فرم با FormData</h2></div><p>در رویداد <code>submit</code> اول <code>preventDefault()</code> می‌زنیم. بعد <code>new FormData(form)</code> مقدار همه‌ی فیلدها را می‌خواند و <code>Object.fromEntries</code> آن را به یک آبجکت ساده تبدیل می‌کند: <code>{ email, pass, name }</code>. پیام‌ها با <code>return show(...)</code> زود خارج می‌شوند (early return) تا کد تو در تو نشود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const data = Object.fromEntries(new FormData(form));
+if (data.pass.length &lt; 6) return show("رمز کوتاه است", "err");</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>رویداد <code>submit</code> و <code>preventDefault</code> (درس ۲۴)</li><li>Destructuring و آبجکت (درس‌های ۳ و ۱۳)</li><li><code>Object.entries</code> و FormData (درس ۱۴)</li><li><code>trim</code> و <code>includes</code> برای رشته‌ها (درس ۹)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">فراموش کردن <code>type="button"</code></div><p>دکمه‌ای داخل فرم که type ندارد، فرم را submit می‌کند. دکمه‌ی «نمایش رمز» و تب‌ها باید <code>type="button"</code> باشند.</p></div><div class="note warn"><div class="note-title">اعتبارسنجی فقط سمت کاربر</div><p>این اعتبارسنجی برای تجربه‌ی بهتر است، نه امنیت. سرور باید دوباره همه‌چیز را بررسی کند.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>نشانگر قدرت رمز (ضعیف، متوسط، قوی) زیر فیلد رمز بساز.</p><details class="ex-ans"><summary>راهنمایی</summary><p>طول، حروف بزرگ و عدد را با Regex بشمار.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>گزینه‌ی «مرا به خاطر بسپار» اضافه کن و ایمیل را ذخیره کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>از <code>localStorage</code> و یک چک‌باکس استفاده کن؛ رمز را هرگز ذخیره نکن!</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>بعد از ارسال، دکمه تا ۲ ثانیه غیرفعال باشد و «در حال ارسال…» نشان بدهد.</p><details class="ex-ans"><summary>راهنمایی</summary><p>با <code>disabled</code> و <code>setTimeout</code> این را شبیه‌سازی کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-auth-form.zip" download>دانلود project-auth-form.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-sticky-header.html">→ پروژه‌ی هدر چسبان با اسکرول نرم</a><a href="project-form-validation.html">پروژه‌ی اعتبارسنجی فرم ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

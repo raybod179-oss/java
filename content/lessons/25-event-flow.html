@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۴ · درس ۴ | Event Delegation، target و dataset</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/25-event-flow.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۴ · درس ۴ | Event Delegation، target و dataset"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/25-event-flow.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۴ · درس ۴</span><h1>Event Delegation، target و dataset</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">Bubbling و stopPropagation</a></li><li><a href="#s2">target و currentTarget</a></li><li><a href="#s3">Event Delegation</a></li><li><a href="#s4">dataset و focus</a></li><li><a href="#s5">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>Bubbling و stopPropagation</h2></div><p>وقتی روی یک المنت کلیک می‌کنی، رویداد از همان المنت به پدرانش «بالا می‌رود». این رفتار را Bubbling می‌نامند.</p><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;div id="outer" style="padding:20px;background:#e0f2fe"&gt;
+  بیرونی
+  &lt;button id="inner"&gt;درونی&lt;/button&gt;
+&lt;/div&gt;
+&lt;p id="log"&gt;&lt;/p&gt;
+&lt;script&gt;
+const log = (t) =&gt; (document.getElementById("log").textContent += t + " ← ");
+document.getElementById("outer").addEventListener("click", () =&gt; log("outer"));
+document.getElementById("inner").addEventListener("click", () =&gt; log("inner"));
+&lt;/script&gt;</code></pre></div></div><p>با <code>e.stopPropagation()</code> مسیر بالا رفتن را قطع می‌کنی. از آن کم استفاده کن، چون باعث می‌شود شنونده‌های دیگر پدرها نبینند چه شد.</p></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>target و currentTarget</h2></div><p><code>e.target</code> المنتی است که واقعاً کلیک شد و <code>e.currentTarget</code> المنتی که شنونده به آن وصل است.</p></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>Event Delegation</h2></div><p>به جای وصل کردن شنونده به ۱۰۰ آیتم، یک شنونده به پدرشان وصل کن. مزیت بزرگ: آیتم‌هایی که بعداً ساخته می‌شوند هم خودکار کار می‌کنند.</p><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;ul id="menu"&gt;
+  &lt;li data-id="1"&gt;درس اول&lt;/li&gt;
+  &lt;li data-id="2"&gt;درس دوم&lt;/li&gt;
+&lt;/ul&gt;
+&lt;button id="add"&gt;آیتم جدید&lt;/button&gt;
+&lt;p id="out"&gt;&lt;/p&gt;
+&lt;script&gt;
+const menu = document.getElementById("menu");
+menu.addEventListener("click", (e) =&gt; {
+  const li = e.target.closest("li");
+  if (!li) return;
+  document.getElementById("out").textContent = "انتخاب شد: " + li.dataset.id;
+});
+let n = 2;
+document.getElementById("add").onclick = () =&gt; {
+  const li = document.createElement("li");
+  li.dataset.id = ++n;
+  li.textContent = "درس " + n;
+  menu.append(li);        // بدون شنونده‌ی جدید کار می‌کند
+};
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>dataset و focus</h2></div><p>ویژگی‌های <code>data-*</code> در HTML از طریق <code>element.dataset</code> خوانده می‌شوند. مثلاً <code>data-user-id</code> می‌شود <code>dataset.userId</code>. با <code>input.focus()</code> مکان‌نما را داخل فیلد می‌گذاری.</p><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;button id="b" data-user-id="42" data-role="admin"&gt;کاربر&lt;/button&gt;
+&lt;input id="i" placeholder="اینجا فوکوس می‌شود"&gt;
+&lt;p id="out"&gt;&lt;/p&gt;
+&lt;script&gt;
+const b = document.getElementById("b");
+b.onclick = () =&gt; {
+  document.getElementById("out").textContent = b.dataset.userId + " / " + b.dataset.role;
+  document.getElementById("i").focus();
+};
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>لیستی بساز که با کلیک روی هر آیتم کلاس done بگیرد (Delegation)</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;ul id="l"&gt;&lt;li&gt;الف&lt;/li&gt;&lt;li&gt;ب&lt;/li&gt;&lt;li&gt;ج&lt;/li&gt;&lt;/ul&gt;
+&lt;style&gt;.done{text-decoration:line-through;color:#888}&lt;/style&gt;
+&lt;script&gt;
+document.getElementById("l").addEventListener("click", (e) =&gt; {
+  if (e.target.matches("li")) e.target.classList.toggle("done");
+});
+&lt;/script&gt;</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="24-events.html">→ رویدادها: موس، کیبورد و فرم</a><a href="26-timers.html">تایمرها: setTimeout و setInterval ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

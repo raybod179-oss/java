@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۱۶ | پروژه‌ی جستجو و فیلتر منو</title><meta name="description" content="منوی رستوران با جستجوی زنده، دسته‌بندی، گزینه‌ی گیاهی، مرتب‌سازی و پررنگ شدن کلمه‌ی جستجوشده. این پروژه نشان می‌دهد چطور چند فیلتر را با هم ترکیب کنی: داده"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-menu-filter.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۱۶ | پروژه‌ی جستجو و فیلتر منو"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۱۶</span><h1>پروژه‌ی جستجو و فیلتر منو</h1><p>منوی رستوران با جستجوی زنده، دسته‌بندی، گزینه‌ی گیاهی، مرتب‌سازی و پررنگ شدن کلمه‌ی جستجوشده. این پروژه نشان می‌دهد چطور چند فیلتر را با هم ترکیب کنی: داده و فیلترها در متغیر هستند و یک تابع <code>render</code> همه را اعمال می‌کند.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: همه‌ی فیلترها در یک state</a></li><li><a href="#s4">قدم ۲: ترکیب فیلترها</a></li><li><a href="#s5">قدم ۳: پررنگ کردن بدون innerHTML</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="520"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+body{display:block}
+.app{max-width:520px;margin:auto}
+h1{font-size:20px;margin:0 0 10px}
+input[type=search],select{font:inherit;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.top{display:flex;gap:8px}.top input{flex:1}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+.chips button{padding:4px 14px;border-radius:999px;font-size:13px}
+.chips button.on{background:var(--a);color:#1a1204;border-color:var(--a)}
+.opts{display:flex;justify-content:space-between;align-items:center;color:var(--mut);font-size:13px;margin-bottom:8px}
+.dish{display:flex;justify-content:space-between;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px}
+.dish b{display:block}.dish small{color:var(--mut)}.price{color:var(--a);font-weight:700;white-space:nowrap}
+mark{background:var(--a);color:#1a1204;border-radius:4px;padding:0 2px}
+.empty{text-align:center;color:var(--mut);padding:20px}
+&lt;/style&gt;
+
+&lt;div class="app"&gt;
+  &lt;h1&gt;منوی رستوران&lt;/h1&gt;
+  &lt;div class="top"&gt;
+    &lt;input type="search" id="q" placeholder="جستجوی غذا…" aria-label="جستجو"&gt;
+    &lt;select id="sort" aria-label="مرتب‌سازی"&gt;
+      &lt;option value=""&gt;پیش‌فرض&lt;/option&gt;
+      &lt;option value="asc"&gt;ارزان‌ترین&lt;/option&gt;
+      &lt;option value="desc"&gt;گران‌ترین&lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/div&gt;
+  &lt;div class="chips" id="chips"&gt;&lt;/div&gt;
+  &lt;div class="opts"&gt;
+    &lt;label&gt;&lt;input type="checkbox" id="veg"&gt; فقط گیاهی&lt;/label&gt;
+    &lt;span id="count"&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div id="list"&gt;&lt;/div&gt;
+  &lt;p class="empty" id="empty" hidden&gt;چیزی پیدا نشد 😕&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const MENU = [
+  { name: "کباب کوبیده", cat: "غذای اصلی", price: 320000, veg: false },
+  { name: "جوجه کباب", cat: "غذای اصلی", price: 290000, veg: false },
+  { name: "قیمه بادمجان", cat: "غذای اصلی", price: 210000, veg: false },
+  { name: "کوکو سبزی", cat: "غذای اصلی", price: 150000, veg: true },
+  { name: "سالاد شیرازی", cat: "پیش‌غذا", price: 60000, veg: true },
+  { name: "ماست و خیار", cat: "پیش‌غذا", price: 45000, veg: true },
+  { name: "سوپ جو", cat: "پیش‌غذا", price: 70000, veg: false },
+  { name: "دوغ محلی", cat: "نوشیدنی", price: 30000, veg: true },
+  { name: "چای زعفرانی", cat: "نوشیدنی", price: 25000, veg: true },
+  { name: "بستنی سنتی", cat: "دسر", price: 80000, veg: true },
+];
+const state = { text: "", cat: "همه", veg: false, sort: "" };     // همه‌ی فیلترها در یک آبجکت
+
+const list = document.getElementById("list");
+const chips = document.getElementById("chips");
+
+["همه", ...new Set(MENU.map((m) =&gt; m.cat))].forEach((c) =&gt; {
+  const b = document.createElement("button");
+  b.textContent = c;
+  b.dataset.cat = c;
+  chips.append(b);
+});
+
+// نوشتن متن با کلمه‌ی پررنگ‌شده، بدون innerHTML (امن)
+function highlight(el, text, query) {
+  el.textContent = "";
+  const i = query ? text.indexOf(query) : -1;
+  if (i === -1) return (el.textContent = text);
+  el.append(text.slice(0, i));
+  const m = document.createElement("mark");
+  m.textContent = text.slice(i, i + query.length);
+  el.append(m, text.slice(i + query.length));
+}
+
+function render() {
+  let items = MENU.filter((m) =&gt;
+    m.name.includes(state.text) &amp;&amp;
+    (state.cat === "همه" || m.cat === state.cat) &amp;&amp;
+    (!state.veg || m.veg));
+  if (state.sort) items = items.toSorted((a, b) =&gt; (state.sort === "asc" ? a.price - b.price : b.price - a.price));
+  list.innerHTML = "";
+  items.forEach((m) =&gt; {
+    const row = document.createElement("div");
+    row.className = "dish";
+    row.innerHTML = "&lt;div&gt;&lt;b&gt;&lt;/b&gt;&lt;small&gt;&lt;/small&gt;&lt;/div&gt;&lt;span class='price'&gt;&lt;/span&gt;";
+    highlight(row.querySelector("b"), m.name, state.text);
+    row.querySelector("small").textContent = m.cat + (m.veg ? " · 🌱" : "");
+    row.querySelector(".price").textContent = m.price.toLocaleString("fa-IR") + " تومان";
+    list.append(row);
+  });
+  document.getElementById("count").textContent = items.length.toLocaleString("fa-IR") + " مورد";
+  document.getElementById("empty").hidden = items.length &gt; 0;
+  chips.querySelectorAll("button").forEach((b) =&gt; b.classList.toggle("on", b.dataset.cat === state.cat));
+}
+
+document.getElementById("q").addEventListener("input", (e) =&gt; { state.text = e.target.value.trim(); render(); });
+document.getElementById("sort").addEventListener("change", (e) =&gt; { state.sort = e.target.value; render(); });
+document.getElementById("veg").addEventListener("change", (e) =&gt; { state.veg = e.target.checked; render(); });
+chips.addEventListener("click", (e) =&gt; { if (e.target.dataset.cat) { state.cat = e.target.dataset.cat; render(); } });
+render();
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>menu-filter/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: همه‌ی فیلترها در یک state</h2></div><p>جستجو، دسته، گیاهی و مرتب‌سازی را در یک آبجکت <code>state</code> نگه می‌داریم. هر کنترل فقط یک فیلد از آن را عوض می‌کند و <code>render()</code> را صدا می‌زند. این ساختار با افزودن فیلتر پنجم (مثلاً بازه‌ی قیمت) به‌راحتی بزرگ می‌شود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const state = { text: "", cat: "همه", veg: false, sort: "" };</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: ترکیب فیلترها</h2></div><p>یک <code>filter</code> با چند شرط که با <code>&amp;&amp;</code> به هم وصل شده‌اند همه‌ی فیلترها را هم‌زمان اعمال می‌کند. شرط دسته به این شکل است: یا «همه» انتخاب شده یا دسته‌ی غذا باید برابر باشد. برای مرتب‌سازی از <code>toSorted</code> استفاده می‌کنیم تا آرایه‌ی اصلی دست نخورد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>let items = MENU.filter((m) =&gt;
+  m.name.includes(state.text) &amp;&amp;
+  (state.cat === "همه" || m.cat === state.cat) &amp;&amp;
+  (!state.veg || m.veg));</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: پررنگ کردن بدون innerHTML</h2></div><p>برای نشان دادن کلمه‌ی جستجوشده، متن را به سه تکه (قبل، تطابق، بعد) می‌شکنیم و تکه‌ی وسط را در <code>mark</code> می‌گذاریم. اگر به‌جای این کار از <code>innerHTML</code> با متن کاربر استفاده کنی، دری به روی تزریق کد باز می‌شود؛ ساختن گره‌ها با <code>append</code> امن است.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const i = text.indexOf(query);
+el.append(text.slice(0, i));
+const m = document.createElement("mark");
+m.textContent = text.slice(i, i + query.length);</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li><code>filter</code>، <code>toSorted</code> و <code>Set</code> (درس‌های ۱۲ و ۱۴)</li><li>رشته‌ها: <code>includes</code>، <code>slice</code>، <code>indexOf</code> (درس ۹)</li><li>عملگرهای منطقی (درس ۴)</li><li>Event Delegation روی دسته‌ها (درس ۲۵)</li><li>آبجکت state (درس ۳)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">جستجوی حساس به حروف انگلیسی</div><p>برای متن انگلیسی هر دو طرف را <code>toLowerCase()</code> کن. در فارسی باید حواست به «ي» و «ی» و «ك» و «ک» هم باشد.</p></div><div class="note warn"><div class="note-title">ویرایش آرایه‌ی اصلی با <code>sort</code></div><p><code>sort</code> خود آرایه را عوض می‌کند و ترتیب اولیه از بین می‌رود؛ <code>toSorted</code> کپی می‌سازد.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>فیلتر بازه‌ی قیمت با دو اسلایدر اضافه کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>دو فیلد <code>min</code> و <code>max</code> به state بده.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>جستجو را با <code>debounce</code> کند کن تا در لیست‌های بزرگ سریع بماند.</p><details class="ex-ans"><summary>راهنمایی</summary><p>تابع <code>debounce</code> درس ۳۳ را به رویداد <code>input</code> بده.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>فیلترها را در آدرس (query string) ذخیره کن تا لینک قابل اشتراک شود.</p><details class="ex-ans"><summary>راهنمایی</summary><p>از <code>URLSearchParams</code> و <code>history.replaceState</code> استفاده کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-menu-filter.zip" download>دانلود project-menu-filter.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-music-player.html">→ پروژه‌ی موزیک پلیر</a><a href="project-shop-cart.html">پروژه‌ی فروشگاه با سبد خرید ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

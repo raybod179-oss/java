@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۱۲ | پروژه‌ی API واقعی با Fetch</title><meta name="description" content="حالا سراغ یک API واقعی روی اینترنت می‌رویم: لیست پست‌ها را از سرور می‌گیری، با صفحه‌بندی نمایش می‌دهی، جزئیات هر پست را باز می‌کنی و حالت‌های loading، خطا "><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-real-api.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۱۲ | پروژه‌ی API واقعی با Fetch"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۱۲</span><h1>پروژه‌ی API واقعی با Fetch</h1><p>حالا سراغ یک API واقعی روی اینترنت می‌رویم: لیست پست‌ها را از سرور می‌گیری، با صفحه‌بندی نمایش می‌دهی، جزئیات هر پست را باز می‌کنی و حالت‌های loading، خطا و تلاش دوباره را درست مدیریت می‌کنی. این نزدیک‌ترین تمرین به کار واقعی فرانت‌اند است.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: تابع کمکی getJSON</a></li><li><a href="#s4">قدم ۲: صفحه‌بندی با query string</a></li><li><a href="#s5">قدم ۳: سه حالت: loading، خطا، موفق</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="500"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+body{display:block}
+.app{max-width:540px;margin:auto}
+h1{font-size:20px;margin:0 0 10px}
+.post{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px;cursor:pointer}
+.post:hover{border-color:var(--a)}
+.post h3{margin:0 0 4px;font-size:15px;direction:ltr;text-align:left}
+.post p{margin:0;color:var(--mut);font-size:13px;direction:ltr;text-align:left}
+.pager{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.state{text-align:center;color:var(--mut);padding:18px}.state.err{color:#fb7185}
+button[disabled]{opacity:.4;cursor:not-allowed}
+.detail{background:var(--card);border:1px solid var(--a);border-radius:14px;padding:14px;margin-bottom:10px;direction:ltr;text-align:left}
+&lt;/style&gt;
+
+&lt;div class="app"&gt;
+  &lt;h1&gt;پست‌ها (API واقعی)&lt;/h1&gt;
+  &lt;div id="detail" class="detail" hidden&gt;&lt;/div&gt;
+  &lt;div id="list"&gt;&lt;/div&gt;
+  &lt;p class="state" id="state"&gt;&lt;/p&gt;
+  &lt;div class="pager"&gt;
+    &lt;button id="next"&gt;صفحه‌ی بعد ←&lt;/button&gt;
+    &lt;span id="page"&gt;صفحه ۱&lt;/span&gt;
+    &lt;button id="prev"&gt;→ صفحه‌ی قبل&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const API = "https://jsonplaceholder.typicode.com/posts";
+const PER_PAGE = 5;
+const list = document.getElementById("list");
+const state = document.getElementById("state");
+const detail = document.getElementById("detail");
+let page = 1;
+
+function setState(text, isError = false, retry = false) {
+  state.textContent = text;
+  state.className = "state" + (isError ? " err" : "");
+  if (retry) {
+    const b = document.createElement("button");
+    b.textContent = "تلاش دوباره";
+    b.addEventListener("click", () =&gt; load());
+    state.append(" ", b);
+  }
+}
+
+async function getJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("خطای سرور " + res.status);
+  return res.json();
+}
+
+async function load() {
+  setState("در حال دریافت…");
+  list.innerHTML = "";
+  try {
+    const posts = await getJSON(API + "?_page=" + page + "&amp;_limit=" + PER_PAGE);
+    posts.forEach((p) =&gt; {
+      const card = document.createElement("div");
+      card.className = "post";
+      card.innerHTML = "&lt;h3&gt;&lt;/h3&gt;&lt;p&gt;&lt;/p&gt;";
+      card.querySelector("h3").textContent = p.title;
+      card.querySelector("p").textContent = p.body.slice(0, 70) + "…";
+      card.addEventListener("click", () =&gt; open(p.id));
+      list.append(card);
+    });
+    setState("");
+    document.getElementById("page").textContent = "صفحه " + page;
+    document.getElementById("prev").disabled = page === 1;
+  } catch (err) {
+    setState("دریافت نشد: " + err.message, true, true);
+  }
+}
+
+async function open(id) {
+  detail.hidden = false;
+  detail.textContent = "در حال دریافت…";
+  try {
+    const p = await getJSON(API + "/" + id);
+    detail.textContent = "";
+    const h = document.createElement("b"); h.textContent = p.title;
+    const t = document.createElement("p"); t.textContent = p.body;
+    detail.append(h, t);
+  } catch (err) {
+    detail.textContent = "خطا: " + err.message;
+  }
+}
+
+document.getElementById("next").addEventListener("click", () =&gt; { page++; load(); });
+document.getElementById("prev").addEventListener("click", () =&gt; { if (page &gt; 1) { page--; load(); } });
+load();
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>real-api/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: تابع کمکی getJSON</h2></div><p>کدِ تکراری «fetch، چک <code>ok</code>، <code>json()</code>» را یک‌بار در <code>getJSON</code> می‌نویسیم و در همه‌جا استفاده می‌کنیم. اگر روزی بخواهی هدر یا توکن اضافه کنی، فقط همین یک جا را عوض می‌کنی.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>async function getJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("خطای سرور " + res.status);
+  return res.json();
+}</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: صفحه‌بندی با query string</h2></div><p>بیشتر APIها صفحه‌بندی را با پارامتر در آدرس می‌پذیرند: <code>?_page=2&amp;_limit=5</code>. متغیر <code>page</code> را نگه می‌داریم، با دکمه‌ها زیاد و کم می‌کنیم و <code>load()</code> را دوباره صدا می‌زنیم. دکمه‌ی قبلی در صفحه‌ی اول <code>disabled</code> می‌شود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const posts = await getJSON(API + "?_page=" + page + "&amp;_limit=" + PER_PAGE);</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: سه حالت: loading، خطا، موفق</h2></div><p>هر درخواست واقعی سه وضعیت دارد و کاربر باید هر سه را ببیند: در حال دریافت، شکست (با دکمه‌ی تلاش دوباره) و موفق. تابع <code>setState</code> این پیام‌ها را یک‌جا مدیریت می‌کند. نبودن حالت خطا یکی از رایج‌ترین ضعف‌های پروژه‌های مبتدی است.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>catch (err) {
+  setState("دریافت نشد: " + err.message, true, true);
+}</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>API، REST و متد GET (درس ۳۱)</li><li>Async/Await و مدیریت خطا (درس ۳۰)</li><li>Promise (درس ۲۹)</li><li>ساخت المنت و Event Listener (درس‌های ۲۳ و ۲۴)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">گذاشتن آدرس API در چند جا</div><p>آدرس پایه را در یک ثابت (<code>API</code>) نگه دار تا تغییرش یک خط باشد.</p></div><div class="note warn"><div class="note-title">نمایش خطای خام به کاربر</div><p>پیام فنی را فقط در کنسول بنویس و به کاربر جمله‌ی قابل فهم و دکمه‌ی تلاش دوباره بده.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>جستجو در عنوان پست‌ها اضافه کن (با debounce).</p><details class="ex-ans"><summary>راهنمایی</summary><p>از تابع <code>debounce</code> درس ۳۳ استفاده کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>با <code>AbortController</code> درخواست قبلی را وقتی صفحه عوض شد لغو کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>سیگنال را به fetch بده و قبل از درخواست جدید <code>abort()</code> بزن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>نتیجه‌ی هر صفحه را کش کن تا برگشتن به آن صفحه فوری باشد.</p><details class="ex-ans"><summary>راهنمایی</summary><p>یک <code>Map</code> با کلید شماره‌ی صفحه نگه دار.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-real-api.zip" download>دانلود project-real-api.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-local-json.html">→ پروژه‌ی API محلی با JSON</a><a href="project-image-slider.html">پروژه‌ی اسلایدر تصاویر ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

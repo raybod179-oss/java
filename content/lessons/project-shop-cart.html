@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۱۷ | پروژه‌ی فروشگاه با سبد خرید</title><meta name="description" content="یک فروشگاه کوچک با سبد خرید کامل: افزودن محصول، تغییر تعداد، حذف، جمع کل، شمارنده‌ی روی آیکون سبد و ماندن سبد بعد از رفرش. بزرگ‌ترین درس این پروژه جدا کردن"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-shop-cart.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۱۷ | پروژه‌ی فروشگاه با سبد خرید"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۱۷</span><h1>پروژه‌ی فروشگاه با سبد خرید</h1><p>یک فروشگاه کوچک با سبد خرید کامل: افزودن محصول، تغییر تعداد، حذف، جمع کل، شمارنده‌ی روی آیکون سبد و ماندن سبد بعد از رفرش. بزرگ‌ترین درس این پروژه جدا کردن «داده» (سبد) از «نمایش» است و همین مفهوم پایه‌ی هر فروشگاه اینترنتی است.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: سبد فقط یک آبجکت است</a></li><li><a href="#s4">قدم ۲: یک تابع برای همه‌ی تغییرات</a></li><li><a href="#s5">قدم ۳: جمع کل با Object.entries</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="540"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+body{display:block}
+.head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+h1{font-size:20px;margin:0}
+.cartbtn{position:relative}.badge{position:absolute;top:-8px;left:-6px;background:var(--a);color:#1a1204;border-radius:999px;font-size:11px;min-width:20px;padding:1px 5px;font-weight:700}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.prod{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;text-align:center}
+.prod .em{font-size:40px}.prod b{display:block;margin:6px 0 2px}.prod small{color:var(--a);display:block;margin-bottom:8px}
+.prod button{padding:6px 12px;font-size:13px;width:100%}
+.cart{position:fixed;top:0;bottom:0;left:0;width:min(330px,92%);background:var(--card);border-right:1px solid var(--line);padding:16px;transform:translateX(-100%);transition:transform .3s;z-index:5;overflow:auto}
+.cart.open{transform:none;box-shadow:0 0 60px #000}
+.row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.row span{flex:1}.row button{padding:2px 9px}
+.total{display:flex;justify-content:space-between;font-weight:700;margin:14px 0}
+.pay{width:100%;background:var(--a);color:#1a1204;font-weight:700;border-color:var(--a)}
+.muted{color:var(--mut);text-align:center;padding:14px}
+&lt;/style&gt;
+
+&lt;div class="head"&gt;
+  &lt;h1&gt;فروشگاه&lt;/h1&gt;
+  &lt;button class="cartbtn" id="open"&gt;🛒 سبد &lt;span class="badge" id="badge"&gt;0&lt;/span&gt;&lt;/button&gt;
+&lt;/div&gt;
+&lt;div class="grid" id="grid"&gt;&lt;/div&gt;
+
+&lt;aside class="cart" id="cart" aria-label="سبد خرید"&gt;
+  &lt;button id="close"&gt;بستن ✕&lt;/button&gt;
+  &lt;h2&gt;سبد خرید&lt;/h2&gt;
+  &lt;div id="rows"&gt;&lt;/div&gt;
+  &lt;div class="total"&gt;&lt;span&gt;جمع کل&lt;/span&gt;&lt;span id="total"&gt;۰&lt;/span&gt;&lt;/div&gt;
+  &lt;button class="pay" id="pay"&gt;پرداخت&lt;/button&gt;
+  &lt;p class="muted" id="msg"&gt;&lt;/p&gt;
+&lt;/aside&gt;
+
+&lt;script&gt;
+const PRODUCTS = [
+  { id: 1, name: "هدفون", emoji: "🎧", price: 950000 },
+  { id: 2, name: "کتاب", emoji: "📘", price: 240000 },
+  { id: 3, name: "ساعت", emoji: "⌚", price: 1400000 },
+  { id: 4, name: "کوله‌پشتی", emoji: "🎒", price: 780000 },
+  { id: 5, name: "لیوان", emoji: "☕", price: 90000 },
+  { id: 6, name: "ماوس", emoji: "🖱️", price: 520000 },
+];
+const KEY = "cart-v1";
+const money = (n) =&gt; n.toLocaleString("fa-IR") + " تومان";
+
+// سبد: { شناسه: تعداد }
+let cart = (() =&gt; { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } })();
+const save = () =&gt; { try { localStorage.setItem(KEY, JSON.stringify(cart)); } catch (e) {} };
+
+const grid = document.getElementById("grid");
+PRODUCTS.forEach((p) =&gt; {
+  const d = document.createElement("div");
+  d.className = "prod";
+  d.innerHTML = "&lt;div class='em'&gt;&lt;/div&gt;&lt;b&gt;&lt;/b&gt;&lt;small&gt;&lt;/small&gt;&lt;button&gt;افزودن به سبد&lt;/button&gt;";
+  d.querySelector(".em").textContent = p.emoji;
+  d.querySelector("b").textContent = p.name;
+  d.querySelector("small").textContent = money(p.price);
+  d.querySelector("button").addEventListener("click", () =&gt; change(p.id, 1));
+  grid.append(d);
+});
+
+function change(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] &lt;= 0) delete cart[id];
+  save();
+  render();
+}
+
+function render() {
+  const rows = document.getElementById("rows");
+  rows.innerHTML = "";
+  let total = 0, count = 0;
+  Object.entries(cart).forEach(([id, qty]) =&gt; {
+    const p = PRODUCTS.find((x) =&gt; x.id === Number(id));
+    total += p.price * qty; count += qty;
+    const r = document.createElement("div");
+    r.className = "row";
+    r.innerHTML = "&lt;span&gt;&lt;/span&gt;&lt;button data-d='-1'&gt;−&lt;/button&gt;&lt;b&gt;&lt;/b&gt;&lt;button data-d='1'&gt;+&lt;/button&gt;";
+    r.querySelector("span").textContent = p.emoji + " " + p.name;
+    r.querySelector("b").textContent = qty.toLocaleString("fa-IR");
+    r.querySelectorAll("button").forEach((b) =&gt; b.addEventListener("click", () =&gt; change(p.id, Number(b.dataset.d))));
+    rows.append(r);
+  });
+  if (!count) rows.innerHTML = "&lt;p class='muted'&gt;سبد خالی است&lt;/p&gt;";
+  document.getElementById("total").textContent = money(total);
+  document.getElementById("badge").textContent = count.toLocaleString("fa-IR");
+}
+
+const panel = document.getElementById("cart");
+document.getElementById("open").addEventListener("click", () =&gt; panel.classList.add("open"));
+document.getElementById("close").addEventListener("click", () =&gt; panel.classList.remove("open"));
+document.getElementById("pay").addEventListener("click", () =&gt; {
+  document.getElementById("msg").textContent = Object.keys(cart).length ? "سفارش ثبت شد (نمونه) ✓" : "اول محصولی اضافه کن";
+  if (Object.keys(cart).length) { cart = {}; save(); render(); }
+});
+render();
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>shop-cart/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: سبد فقط یک آبجکت است</h2></div><p>سبد را به‌صورت <code>{ شناسه: تعداد }</code> نگه می‌داریم، مثلاً <code>{ 1: 2, 4: 1 }</code>. نه HTML و نه نام محصول؛ فقط شناسه و تعداد. قیمت و نام را هر بار از آرایه‌ی <code>PRODUCTS</code> می‌گیریم (یک منبع حقیقت) تا اگر قیمت عوض شد، سبد قدیمی قیمت اشتباه نگه ندارد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>let cart = { 1: 2, 4: 1 };   // دو هدفون و یک کوله</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: یک تابع برای همه‌ی تغییرات</h2></div><p>افزودن، کم کردن و حذف همه از <code>change(id, delta)</code> می‌گذرد: تعداد را تغییر می‌دهد، اگر صفر یا کمتر شد ورودی را حذف می‌کند، ذخیره می‌کند و دوباره می‌سازد. تابع <code>render</code> همیشه از صفر لیست و جمع کل را حساب می‌کند، پس هیچ‌وقت با داده‌ی صفحه ناهماهنگ نمی‌شود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>function change(id, delta) {
+  cart[id] = (cart[id] || 0) + delta;
+  if (cart[id] &lt;= 0) delete cart[id];
+  save(); render();
+}</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: جمع کل با Object.entries</h2></div><p><code>Object.entries(cart)</code> آبجکت را به آرایه‌ی <code>[شناسه، تعداد]</code> تبدیل می‌کند و می‌توانیم با حلقه و <code>find</code> محصول را پیدا کنیم و <code>price × qty</code> را جمع بزنیم. سبد در <code>localStorage</code> ذخیره می‌شود، پس بعد از رفرش هم می‌ماند. پنل سبد فقط یک کلاس <code>open</code> و <code>transform</code> دارد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>Object.entries(cart).forEach(([id, qty]) =&gt; {
+  const p = PRODUCTS.find((x) =&gt; x.id === Number(id));
+  total += p.price * qty;
+});</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>آبجکت، <code>delete</code> و <code>Object.entries</code> (درس‌های ۳ و ۱۴)</li><li><code>find</code> و <code>forEach</code> (درس‌های ۱۱ و ۱۲)</li><li><code>localStorage</code> و JSON (درس ۲۷)</li><li>تابع، پارامتر پیش‌فرض و <code>||</code> (درس‌های ۴ و ۷)</li><li>جداسازی داده از نمایش (درس ۲۷)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">ذخیره‌ی قیمت داخل سبد</div><p>اگر قیمت را در سبد کپی کنی و بعداً قیمت عوض شود، مشتری قیمت قدیمی را می‌بیند. فقط شناسه و تعداد بگذار.</p></div><div class="note warn"><div class="note-title">اعتماد به قیمت سمت کاربر</div><p>در فروشگاه واقعی قیمت نهایی را حتماً سرور حساب می‌کند؛ هر چیزی در مرورگر قابل دست‌کاری است.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>کد تخفیف (مثلاً RAYVO10 برای ۱۰٪) اضافه کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>یک آبجکت کدها بساز و درصد را از جمع کل کم کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>هزینه‌ی ارسال: بالای ۱٬۰۰۰٬۰۰۰ تومان رایگان.</p><details class="ex-ans"><summary>راهنمایی</summary><p>یک شرط ساده روی جمع کل.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>فیلتر و جستجوی محصولات را با پروژه‌ی منوی غذا ترکیب کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>همان الگوی <code>state</code> و <code>render</code> را کپی کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-shop-cart.zip" download>دانلود project-shop-cart.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-menu-filter.html">→ پروژه‌ی جستجو و فیلتر منو</a><a href="project-movie-api.html">پروژه‌ی Movie API ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

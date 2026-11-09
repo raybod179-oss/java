@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۷ | پروژه‌ی بازی دایناسور</title><meta name="description" content="بازی دایناسور مرورگر گوگل را می‌سازیم: دایناسور با فاصله‌ی کلید یا لمس می‌پرد، مانع‌ها می‌آیند، سرعت بیشتر می‌شود و بهترین امتیاز ذخیره می‌شود. این پروژه ب"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-dino.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۷ | پروژه‌ی بازی دایناسور"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۷</span><h1>پروژه‌ی بازی دایناسور</h1><p>بازی دایناسور مرورگر گوگل را می‌سازیم: دایناسور با فاصله‌ی کلید یا لمس می‌پرد، مانع‌ها می‌آیند، سرعت بیشتر می‌شود و بهترین امتیاز ذخیره می‌شود. این پروژه با <code>requestAnimationFrame</code>، فیزیک ساده (سرعت و گرانش) و تشخیص برخورد، اولین قدمت به بازی‌سازی است.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: صحنه‌ی بازی</a></li><li><a href="#s4">قدم ۲: فیزیک پرش</a></li><li><a href="#s5">قدم ۳: حلقه‌ی بازی و برخورد</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="330"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.game{position:relative;width:min(560px,100%);height:200px;overflow:hidden;direction:ltr;background:var(--card);border:1px solid var(--line);border-radius:16px;touch-action:manipulation;user-select:none}
+.ground{position:absolute;left:0;right:0;bottom:32px;height:2px;background:var(--line)}
+#dino{position:absolute;left:40px;bottom:34px;width:34px;height:40px;background:var(--a);border-radius:8px 8px 4px 4px;box-shadow:0 0 14px var(--a)}
+#dino::after{content:"";position:absolute;top:8px;right:6px;width:6px;height:6px;border-radius:50%;background:var(--bg)}
+#cactus{position:absolute;bottom:34px;width:20px;height:38px;background:#4ade80;border-radius:6px;left:600px}
+.hud{position:absolute;top:10px;left:14px;right:14px;display:flex;justify-content:space-between;font-size:14px;color:var(--mut)}
+#msg{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:18px;color:var(--text);background:rgba(7,11,22,.55)}
+&lt;/style&gt;
+
+&lt;div class="game" id="game" tabindex="0" aria-label="بازی دایناسور؛ با فاصله بپر"&gt;
+  &lt;div class="hud"&gt;&lt;span&gt;امتیاز: &lt;b id="score"&gt;0&lt;/b&gt;&lt;/span&gt;&lt;span&gt;بهترین: &lt;b id="best"&gt;0&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;div class="ground"&gt;&lt;/div&gt;
+  &lt;div id="dino"&gt;&lt;/div&gt;
+  &lt;div id="cactus"&gt;&lt;/div&gt;
+  &lt;div id="msg"&gt;برای شروع Space یا لمس&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const game = document.getElementById("game");
+const dino = document.getElementById("dino");
+const cactus = document.getElementById("cactus");
+const msg = document.getElementById("msg");
+const scoreEl = document.getElementById("score");
+const bestEl = document.getElementById("best");
+
+const W = 560, GRAVITY = 0.7, JUMP = 13;
+let y = 0, vy = 0;                  // ارتفاع دایناسور از زمین و سرعت عمودی
+let cx = W + 100, speed = 6;        // موقعیت و سرعت مانع
+let score = 0, best = 0, running = false;
+
+try { best = Number(localStorage.getItem("dino-best")) || 0; } catch (e) {}
+bestEl.textContent = best;
+
+function jump() {
+  if (!running) return start();
+  if (y === 0) vy = JUMP;           // فقط روی زمین می‌شود پرید
+}
+function start() {
+  y = 0; vy = 0; cx = W + 100; speed = 6; score = 0;
+  scoreEl.textContent = 0;
+  msg.hidden = true;
+  running = true;
+  requestAnimationFrame(loop);
+}
+function gameOver() {
+  running = false;
+  if (score &gt; best) {
+    best = score;
+    bestEl.textContent = best;
+    try { localStorage.setItem("dino-best", best); } catch (e) {}
+  }
+  msg.textContent = "باختی! امتیاز " + score + " (Space برای دوباره)";
+  msg.hidden = false;
+}
+
+function update() {
+  vy -= GRAVITY;                    // گرانش
+  y = Math.max(0, y + vy);
+  if (y === 0) vy = 0;
+  cx -= speed;
+  if (cx &lt; -30) {                   // مانع از صفحه رفت: امتیاز و مانع جدید
+    cx = W + Math.random() * 250;
+    score++;
+    scoreEl.textContent = score;
+    speed = Math.min(speed + 0.25, 13);
+  }
+  const hit = cx &lt; 74 &amp;&amp; cx + 20 &gt; 40 &amp;&amp; y &lt; 38;     // برخورد مستطیل‌ها
+  if (hit) gameOver();
+}
+function render() {
+  dino.style.bottom = 34 + y + "px";
+  cactus.style.left = cx + "px";
+}
+function loop() {
+  if (!running) return;
+  update();
+  render();
+  requestAnimationFrame(loop);
+}
+
+document.addEventListener("keydown", (e) =&gt; {
+  if (e.code === "Space" || e.key === "ArrowUp") { e.preventDefault(); jump(); }
+});
+game.addEventListener("pointerdown", jump);
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>dino/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: صحنه‌ی بازی</h2></div><p>بازی فقط چند <code>div</code> است: زمین، دایناسور و مانع. همه با <code>position:absolute</code> داخل یک قاب <code>relative</code> قرار می‌گیرند. جهت قاب را <code>ltr</code> کرده‌ایم تا مختصات <code>left</code> همان چیزی باشد که انتظار داری.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>CSS</span><span class="demo-tag">css</span></div><pre><code>.game { position: relative; overflow: hidden; direction: ltr; }
+#dino { position: absolute; left: 40px; bottom: 34px; }</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: فیزیک پرش</h2></div><p>پرش یعنی سرعت اولیه‌ی رو به بالا (<code>vy = 13</code>) و کم شدن آن با گرانش در هر فریم. ارتفاع (<code>y</code>) هر فریم با سرعت جمع می‌شود. وقتی دوباره به زمین رسید، سرعت صفر می‌شود. این همان فیزیک ساده‌ی همه‌ی بازی‌های دوبعدی است.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>vy -= GRAVITY;
+y = Math.max(0, y + vy);
+if (y === 0) vy = 0;</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: حلقه‌ی بازی و برخورد</h2></div><p><code>requestAnimationFrame</code> تابع را قبل از هر رسم صفحه (حدود ۶۰ بار در ثانیه) صدا می‌زند و برخلاف <code>setInterval</code> با نرخ نمایش هماهنگ است. برخورد وقتی رخ می‌دهد که مستطیل مانع با مستطیل دایناسور هم‌پوشانی افقی داشته باشد و دایناسور هنوز پایین باشد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const hit = cx &lt; 74 &amp;&amp; cx + 20 &gt; 40 &amp;&amp; y &lt; 38;</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li><code>requestAnimationFrame</code> و حلقه‌ی بازی (درس‌های ۲۶ و ۲۸)</li><li>عملگر منطقی <code>&amp;&amp;</code> (درس ۴)</li><li><code>Math.random</code> و <code>Math.min</code> (درس ۱۰)</li><li>رویدادهای کیبورد و pointer (درس ۲۴)</li><li><code>localStorage</code> برای بهترین امتیاز (درس ۲۷)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">ثابت نبودن سرعت روی دستگاه‌های مختلف</div><p>در این نسخه‌ی ساده سرعت وابسته به نرخ فریم است. در بازی جدی از اختلاف زمان بین فریم‌ها (<code>deltaTime</code>) استفاده کن.</p></div><div class="note warn"><div class="note-title">اسکرول صفحه با Space</div><p>کلید فاصله صفحه را اسکرول می‌کند؛ برای همین <code>e.preventDefault()</code> داریم.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>مانع دوم (پرنده) بساز که در ارتفاع بالا می‌آید و باید خم شد.</p><details class="ex-ans"><summary>راهنمایی</summary><p>یک مانع دوم با ارتفاع <code>bottom</code> بیشتر بساز و کلید پایین را برای خم شدن اضافه کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>روز و شب: هر ۱۰ امتیاز رنگ پس‌زمینه عوض شود.</p><details class="ex-ans"><summary>راهنمایی</summary><p>کلاس <code>night</code> را روی <code>game</code> toggle کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>صدای پرش اضافه کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>از <code>new Audio()</code> یا Web Audio API استفاده کن (بعد از اولین تعامل کاربر).</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-dino.zip" download>دانلود project-dino.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-slider.html">→ پروژه‌ی اسلایدر نظرات</a><a href="project-sticky-header.html">پروژه‌ی هدر چسبان با اسکرول نرم ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

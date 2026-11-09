@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۲۲ | پروژه‌ی ماشین حساب</title><meta name="description" content="ماشین حساب کامل با چهار عمل اصلی، درصد، تغییر علامت، اعشار، حذف یک رقم و پشتیبانی از کیبورد. مهم‌ترین نکته‌ی این پروژه این است که از eval استفاده نمی‌کنیم "><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-calculator.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۲۲ | پروژه‌ی ماشین حساب"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۲۲</span><h1>پروژه‌ی ماشین حساب</h1><p>ماشین حساب کامل با چهار عمل اصلی، درصد، تغییر علامت، اعشار، حذف یک رقم و پشتیبانی از کیبورد. مهم‌ترین نکته‌ی این پروژه این است که <b>از <code>eval</code> استفاده نمی‌کنیم</b> (که خطرناک است) و منطق را با یک «ماشین حالت» ساده می‌نویسیم: عدد فعلی، عدد قبلی و عملگر. این مفهوم در طراحی هر برنامه‌ی تعاملی کاربرد دارد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: چرا eval نه؟</a></li><li><a href="#s4">قدم ۲: وقتی کلید فشرده می‌شود</a></li><li><a href="#s5">قدم ۳: دام اعداد اعشاری و تقسیم بر صفر</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="520"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.calc{width:min(320px,100%);background:var(--card);border:1px solid var(--line);border-radius:24px;padding:16px}
+.screen{background:var(--bg);border-radius:16px;padding:14px;text-align:right;direction:ltr;margin-bottom:12px;min-height:84px}
+.hist{color:var(--mut);font-size:13px;min-height:18px}.cur{font-size:34px;font-weight:700;overflow:hidden;text-overflow:ellipsis}
+.keys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;direction:ltr}
+.keys button{padding:14px 0;font-size:18px;border-radius:14px}
+.keys .op{background:rgba(251,191,36,.12);color:var(--a)}
+.keys .eq{background:var(--a);color:#1a1204;font-weight:700;border-color:var(--a)}
+.keys .fn{color:var(--mut)}
+.keys .zero{grid-column:span 2}
+&lt;/style&gt;
+
+&lt;div class="calc"&gt;
+  &lt;div class="screen"&gt;&lt;div class="hist" id="hist"&gt;&lt;/div&gt;&lt;div class="cur" id="cur"&gt;0&lt;/div&gt;&lt;/div&gt;
+  &lt;div class="keys" id="keys"&gt;
+    &lt;button class="fn" data-k="C"&gt;C&lt;/button&gt;&lt;button class="fn" data-k="±"&gt;±&lt;/button&gt;&lt;button class="fn" data-k="%"&gt;%&lt;/button&gt;&lt;button class="op" data-k="/"&gt;÷&lt;/button&gt;
+    &lt;button data-k="7"&gt;7&lt;/button&gt;&lt;button data-k="8"&gt;8&lt;/button&gt;&lt;button data-k="9"&gt;9&lt;/button&gt;&lt;button class="op" data-k="*"&gt;×&lt;/button&gt;
+    &lt;button data-k="4"&gt;4&lt;/button&gt;&lt;button data-k="5"&gt;5&lt;/button&gt;&lt;button data-k="6"&gt;6&lt;/button&gt;&lt;button class="op" data-k="-"&gt;−&lt;/button&gt;
+    &lt;button data-k="1"&gt;1&lt;/button&gt;&lt;button data-k="2"&gt;2&lt;/button&gt;&lt;button data-k="3"&gt;3&lt;/button&gt;&lt;button class="op" data-k="+"&gt;+&lt;/button&gt;
+    &lt;button class="zero" data-k="0"&gt;0&lt;/button&gt;&lt;button data-k="."&gt;.&lt;/button&gt;&lt;button class="eq" data-k="="&gt;=&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+// ماشین حالت: عدد فعلی (متن)، عدد قبلی، عملگر و اینکه تازه محاسبه شده یا نه
+let cur = "0", prev = null, op = null, fresh = false;
+const curEl = document.getElementById("cur");
+const histEl = document.getElementById("hist");
+const SYMBOL = { "+": "+", "-": "−", "*": "×", "/": "÷" };
+
+function calc(a, b, o) {
+  a = Number(a); b = Number(b);
+  if (o === "+") return a + b;
+  if (o === "-") return a - b;
+  if (o === "*") return a * b;
+  if (o === "/") return b === 0 ? null : a / b;       // تقسیم بر صفر
+}
+const clean = (n) =&gt; String(Math.round(n * 1e10) / 1e10);   // 0.1+0.2 → 0.3
+
+function show() {
+  curEl.textContent = cur;
+  histEl.textContent = prev !== null &amp;&amp; op ? prev + " " + SYMBOL[op] : "";
+}
+function error(msg) { cur = msg; prev = null; op = null; fresh = true; show(); }
+
+function press(k) {
+  if (cur === "تقسیم بر صفر") cur = "0";
+  if (/^\d$/.test(k)) {
+    cur = fresh || cur === "0" ? k : cur + k;
+    fresh = false;
+  } else if (k === ".") {
+    if (fresh) { cur = "0."; fresh = false; }
+    else if (!cur.includes(".")) cur += ".";
+  } else if (k === "C") {
+    cur = "0"; prev = null; op = null; fresh = false;
+  } else if (k === "±") {
+    if (cur !== "0") cur = cur.startsWith("-") ? cur.slice(1) : "-" + cur;
+  } else if (k === "%") {
+    cur = clean(Number(cur) / 100);
+  } else if (k === "Backspace") {
+    cur = cur.length &gt; 1 &amp;&amp; !fresh ? cur.slice(0, -1) : "0";
+    if (cur === "-") cur = "0";
+  } else if ("+-*/".includes(k)) {
+    if (op &amp;&amp; !fresh) {                               // زنجیره: 2 + 3 + ...
+      const r = calc(prev, cur, op);
+      if (r === null) return error("تقسیم بر صفر");
+      prev = clean(r); cur = prev;
+    } else prev = cur;
+    op = k; fresh = true;
+  } else if (k === "=" || k === "Enter") {
+    if (!op) return;
+    const r = calc(prev, cur, op);
+    if (r === null) return error("تقسیم بر صفر");
+    histEl.textContent = prev + " " + SYMBOL[op] + " " + cur + " =";
+    cur = clean(r); prev = null; op = null; fresh = true;
+    curEl.textContent = cur;
+    return;
+  }
+  show();
+}
+
+document.getElementById("keys").addEventListener("click", (e) =&gt; { if (e.target.dataset.k) press(e.target.dataset.k); });
+document.addEventListener("keydown", (e) =&gt; {
+  if (/^[\d.+\-*\/%]$/.test(e.key) || ["Enter", "Backspace"].includes(e.key) || e.key === "=") {
+    e.preventDefault();
+    press(e.key === "=" ? "=" : e.key);
+  } else if (e.key === "Escape") press("C");
+});
+show();
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>calculator/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: چرا eval نه؟</h2></div><p>ساده‌ترین راه، جمع کردن متن عبارت و دادنش به <code>eval("2+3*4")</code> است. ولی <code>eval</code> هر کد جاوااسکریپتی را اجرا می‌کند و اگر ورودی از کاربر یا آدرس صفحه بیاید، یک حفره‌ی امنیتی جدی است. راه درست این است که خودمان منطق را بنویسیم: سه متغیر کافی است؛ عدد فعلی (<code>cur</code>)، عدد قبلی (<code>prev</code>) و عملگر (<code>op</code>).</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>let cur = "0", prev = null, op = null;
+function calc(a, b, o) {
+  if (o === "+") return Number(a) + Number(b);
+}</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: وقتی کلید فشرده می‌شود</h2></div><p>همه‌ی کلیدها (دکمه‌ها و کیبورد) به یک تابع <code>press(k)</code> می‌رسند که با زنجیره‌ی <code>if/else if</code> نوع کلید را تشخیص می‌دهد: رقم، نقطه، عملگر، مساوی و ... عدد فعلی را به‌صورت <b>متن</b> نگه می‌داریم تا نقطه‌ی اعشار و صفرهای آخر (مثل «2.50») حفظ شوند و فقط موقع محاسبه به عدد تبدیل شود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>if (/^\d$/.test(k)) {
+  cur = fresh || cur === "0" ? k : cur + k;
+}</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: دام اعداد اعشاری و تقسیم بر صفر</h2></div><p>در جاوااسکریپت <code>0.1 + 0.2</code> می‌شود <code>0.30000000000000004</code>. تابع <code>clean</code> نتیجه را تا ۱۰ رقم اعشار گرد می‌کند. تقسیم بر صفر در جاوااسکریپت <code>Infinity</code> می‌دهد که برای ماشین حساب بی‌معناست؛ آن را جدا تشخیص می‌دهیم و پیام خطا نشان می‌دهیم. عملگر زنجیره‌ای (۲ + ۳ + ۴) هم با محاسبه‌ی مرحله‌ی قبل قبل از ذخیره‌ی عملگر جدید ساخته شده است.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const clean = (n) =&gt; String(Math.round(n * 1e10) / 1e10);
+return b === 0 ? null : a / b;</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>شرط‌ها و <code>switch</code> یا <code>if/else if</code> (درس ۵)</li><li>تبدیل رشته و عدد، <code>Number</code> و <code>NaN</code> (درس‌های ۴ و ۱۰)</li><li>Regex برای تشخیص کلیدها (درس ۱۵)</li><li>Event Delegation و کیبورد (درس‌های ۲۴ و ۲۵)</li><li>متدهای رشته: <code>slice</code>، <code>includes</code> (درس ۹)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">استفاده از <code>eval</code> یا <code>new Function</code> برای محاسبه</div><p>هر دو کد دلخواه اجرا می‌کنند و ریسک امنیتی‌اند. محاسبه را خودت بنویس.</p></div><div class="note warn"><div class="note-title">نگه‌داشتن عدد فعلی به‌صورت Number</div><p>با Number نمی‌توانی «۲.» یا «۲.۰» را نشان بدهی و صفرهای اعشاری از بین می‌روند؛ رشته نگه دار.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>حافظه‌ی ماشین حساب (M+ و MR و MC) اضافه کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>یک متغیر <code>memory</code> و سه کلید جدید.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>تاریخچه‌ی محاسبه‌ها را در یک لیست کنار ماشین حساب نشان بده.</p><details class="ex-ans"><summary>راهنمایی</summary><p>هر بار <code>=</code> یک رشته به آرایه اضافه کن و در <code>localStorage</code> ذخیره کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>ماشین حساب علمی: توان، جذر، sin و cos.</p><details class="ex-ans"><summary>راهنمایی</summary><p>از آبجکت <code>Math</code> درس ۱۰ استفاده کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-calculator.zip" download>دانلود project-calculator.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-one-page-site.html">→ پروژه‌ی سایت تک‌صفحه‌ای</a><a href="plugin-clipboard.html">Clipboard.js: کپی با یک کلیک ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

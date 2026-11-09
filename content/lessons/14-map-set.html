@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۲ · درس ۶ | Map، Set و متدهای Object</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/14-map-set.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۲ · درس ۶ | Map، Set و متدهای Object"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/14-map-set.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۲ · درس ۶</span><h1>Map، Set و متدهای Object</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">Object.keys و values و entries</a></li><li><a href="#s2">Freeze و Seal</a></li><li><a href="#s3">Set: مجموعه‌ی بدون تکرار</a></li><li><a href="#s4">Map: کلید و مقدار با هر نوع کلید</a></li><li><a href="#s5">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>Object.keys و values و entries</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const stock = { apple: 5, banana: 0, pear: 12 };
+console.log(Object.keys(stock));
+console.log(Object.values(stock));
+for (const [k, v] of Object.entries(stock)) console.log(k, v);</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>Freeze و Seal</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const cfg = Object.freeze({ mode: "prod" });
+cfg.mode = "dev";             // بی‌صدا نادیده گرفته می‌شود
+console.log(cfg.mode);
+const o = Object.seal({ a: 1 });
+o.a = 2;                       // تغییر مقدار مجاز
+o.b = 3;                       // اضافه کردن کلید ممنوع
+console.log(o);</code></pre></div></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>Set: مجموعه‌ی بدون تکرار</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const s = new Set([1, 2, 2, 3, 3]);
+s.add(4);
+console.log(s.has(2), s.size, [...s]);
+const unique = [...new Set(["a", "b", "a"])];
+console.log(unique);</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>Map: کلید و مقدار با هر نوع کلید</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const m = new Map();
+m.set("name", "Rayvo").set(1, "عدد");
+console.log(m.get("name"), m.size, m.has(1));
+for (const [k, v] of m) console.log(k, "→", v);</code></pre></div></div><div class="note tip"><div class="note-title">کی Map؟</div><p>وقتی کلیدها داینامیک یا غیر متنی‌اند و ترتیب اضافه شدن مهم است. برای توصیف یک چیز ثابت (مثل کاربر) آبجکت ساده بهتر است.</p></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>آرایه‌ی [1,1,2,3,3] را بدون تکرار کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log([...new Set([1, 1, 2, 3, 3])]);</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>مجموع مقدارهای آبجکت stock را حساب کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const stock = { a: 5, b: 0, c: 12 };
+console.log(Object.values(stock).reduce((x, y) =&gt; x + y, 0));</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="13-destructuring.html">→ Destructuring، Spread و Rest</a><a href="15-regex-date.html">Regex و Date ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

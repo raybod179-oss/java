@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۱ | پروژه‌ی شمارنده‌ی عدد</title><meta name="description" content="اولین پروژه‌ی واقعی: شمارنده‌ای با دکمه‌ی زیاد و کم، انتخاب گام، رنگ‌بندی مثبت و منفی و کلیدهای میان‌بر. با همین پروژه اصل مهم «state و render» را یاد می‌گ"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-counter.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۱ | پروژه‌ی شمارنده‌ی عدد"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۱</span><h1>پروژه‌ی شمارنده‌ی عدد</h1><p>اولین پروژه‌ی واقعی: شمارنده‌ای با دکمه‌ی زیاد و کم، انتخاب گام، رنگ‌بندی مثبت و منفی و کلیدهای میان‌بر. با همین پروژه اصل مهم «state و render» را یاد می‌گیری: داده را در یک متغیر نگه می‌داری و هر بار تغییر کرد، صفحه را از روی آن دوباره می‌نویسی.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: ساختار HTML</a></li><li><a href="#s4">قدم ۲: ظاهر با CSS</a></li><li><a href="#s5">قدم ۳: منطق با جاوااسکریپت</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="330"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.card{width:min(360px,100%);text-align:center;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:28px;box-shadow:0 0 40px -12px var(--a)}
+h1{margin:0 0 8px;font-size:20px;color:var(--mut)}
+.value{font-size:72px;font-weight:700;line-height:1.2;margin:8px 0 18px;transition:color .2s}
+.value.pos{color:#4ade80}.value.neg{color:#fb7185}
+.row{display:flex;gap:10px;justify-content:center}
+.row button{font-size:22px;min-width:64px}
+.step{display:block;margin-top:18px;color:var(--mut);font-size:14px}
+select{font:inherit;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:4px 8px}
+.hint{font-size:12px;color:var(--mut);margin:14px 0 0}
+&lt;/style&gt;
+
+&lt;main class="card"&gt;
+  &lt;h1&gt;شمارنده&lt;/h1&gt;
+  &lt;div id="value" class="value" aria-live="polite"&gt;0&lt;/div&gt;
+  &lt;div class="row"&gt;
+    &lt;button id="dec" aria-label="کم کن"&gt;−&lt;/button&gt;
+    &lt;button id="reset"&gt;صفر&lt;/button&gt;
+    &lt;button id="inc" aria-label="زیاد کن"&gt;+&lt;/button&gt;
+  &lt;/div&gt;
+  &lt;label class="step"&gt;گام:
+    &lt;select id="step"&gt;&lt;option&gt;1&lt;/option&gt;&lt;option&gt;5&lt;/option&gt;&lt;option&gt;10&lt;/option&gt;&lt;/select&gt;
+  &lt;/label&gt;
+  &lt;p class="hint"&gt;کلیدهای ↑ و ↓ و R هم کار می‌کنند&lt;/p&gt;
+&lt;/main&gt;
+
+&lt;script&gt;
+const valueEl = document.getElementById("value");
+const stepEl = document.getElementById("step");
+let count = 0;                       // تنها منبع حقیقت (state)
+
+function render() {
+  valueEl.textContent = count.toLocaleString("fa-IR");
+  valueEl.className = "value " + (count &gt; 0 ? "pos" : count &lt; 0 ? "neg" : "");
+}
+function change(direction) {
+  count += direction * Number(stepEl.value);
+  render();
+}
+function reset() { count = 0; render(); }
+
+document.getElementById("inc").addEventListener("click", () =&gt; change(1));
+document.getElementById("dec").addEventListener("click", () =&gt; change(-1));
+document.getElementById("reset").addEventListener("click", reset);
+document.addEventListener("keydown", (e) =&gt; {
+  if (e.key === "ArrowUp") change(1);
+  else if (e.key === "ArrowDown") change(-1);
+  else if (e.key.toLowerCase() === "r") reset();
+});
+render();
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>counter/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: ساختار HTML</h2></div><p>صفحه فقط سه چیز دارد: عدد، سه دکمه و یک <code>select</code> برای گام. به عدد <code>id="value"</code> می‌دهیم تا با جاوااسکریپت پیدایش کنیم. صفت <code>aria-live="polite"</code> باعث می‌شود صفحه‌خوان‌ها تغییر عدد را اعلام کنند، و <code>aria-label</code> روی دکمه‌های نمادی نام قابل فهم می‌دهد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>HTML</span><span class="demo-tag">html</span></div><pre><code>&lt;div id="value" class="value" aria-live="polite"&gt;0&lt;/div&gt;
+&lt;button id="inc" aria-label="زیاد کن"&gt;+&lt;/button&gt;</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: ظاهر با CSS</h2></div><p>رنگ‌ها را با متغیرهای CSS (<code>--a</code>، <code>--bg</code>) تعریف کرده‌ایم تا تغییر تم فقط یک جا باشد. کلاس‌های <code>pos</code> و <code>neg</code> رنگ عدد را عوض می‌کنند و <code>transition</code> این تغییر را نرم می‌کند.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>CSS</span><span class="demo-tag">css</span></div><pre><code>.value.pos { color: #4ade80; }
+.value.neg { color: #fb7185; }</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: منطق با جاوااسکریپت</h2></div><p>قلب پروژه یک متغیر ساده است: <code>count</code>. هر دکمه فقط <code>count</code> را عوض می‌کند و بعد <code>render()</code> را صدا می‌زند. هیچ‌وقت عدد را مستقیم از روی صفحه نمی‌خوانیم؛ صفحه فقط نمایش داده است. این الگو در همه‌ی پروژه‌های بزرگ (حتی React) تکرار می‌شود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>function change(direction) {
+  count += direction * Number(stepEl.value);
+  render();
+}</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>متغیر و <code>let</code> (درس ۲)</li><li>انتخاب المنت و رویدادها (درس‌های ۲۲ و ۲۴)</li><li>تابع و Arrow Function (درس ۷)</li><li>عملگر سه‌تایی (درس ۵)</li><li><code>toLocaleString</code> برای اعداد فارسی (درس ۹)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">مقدار <code>select</code> رشته است</div><p>نتیجه‌ی <code>stepEl.value</code> متن است، پس اگر <code>Number()</code> نزنی، ۵ + ۵ می‌شود «۵۵». همیشه ورودی فرم را تبدیل کن.</p></div><div class="note warn"><div class="note-title">نوشتن <code>onclick = change(1)</code></div><p>با پرانتز، تابع همان لحظه اجرا می‌شود. تابع را داخل یک Arrow Function بگذار.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>حداقل و حداکثر بگذار: عدد از ۰ پایین‌تر و از ۱۰۰ بالاتر نرود.</p><details class="ex-ans"><summary>راهنمایی</summary><p>داخل <code>change</code> نتیجه را با <code>Math.min</code> و <code>Math.max</code> محدود کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>مقدار شمارنده را در <code>localStorage</code> ذخیره کن تا بعد از رفرش بماند.</p><details class="ex-ans"><summary>راهنمایی</summary><p>در پایان <code>render</code> مقدار را بنویس و در شروع برنامه بخوان؛ فراموش نکن <code>JSON</code> و <code>try/catch</code>.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>یک دکمه‌ی «تاریخچه» بساز که ۵ مقدار آخر را نشان دهد.</p><details class="ex-ans"><summary>راهنمایی</summary><p>یک آرایه نگه دار و با <code>push</code> و <code>slice(-5)</code> کار کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-counter.zip" download>دانلود project-counter.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="35-errors-debug.html">→ مدیریت خطا و دیباگ حرفه‌ای</a><a href="project-modal.html">پروژه‌ی مودال باکس ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

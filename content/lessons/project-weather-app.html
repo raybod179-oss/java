@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۲۰ | پروژه‌ی برنامه‌ی آب‌وهوا</title><meta name="description" content="برنامه‌ی آب‌وهوا با API رایگان Open-Meteo: نام شهر را می‌نویسی، مختصاتش را از سرویس جغرافیایی می‌گیری، بعد وضعیت فعلی و پیش‌بینی ۵ روز را نشان می‌دهی و آخر"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-weather-app.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۲۰ | پروژه‌ی برنامه‌ی آب‌وهوا"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۲۰</span><h1>پروژه‌ی برنامه‌ی آب‌وهوا</h1><p>برنامه‌ی آب‌وهوا با API رایگان Open-Meteo: نام شهر را می‌نویسی، مختصاتش را از سرویس جغرافیایی می‌گیری، بعد وضعیت فعلی و پیش‌بینی ۵ روز را نشان می‌دهی و آخرین شهر را به خاطر می‌سپاری. این پروژه نمونه‌ی خوبی از دو درخواست پشت‌سرهم که به هم وابسته‌اند با <code>async/await</code> است.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: دو درخواست وابسته</a></li><li><a href="#s4">قدم ۲: جدول کدها</a></li><li><a href="#s5">قدم ۳: پیش‌بینی چندروزه</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="540"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+body{display:block}
+.app{max-width:460px;margin:auto}
+form{display:flex;gap:8px}
+input{flex:1;font:inherit;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+form button{background:var(--a);color:#1a1204;font-weight:700;border-color:var(--a)}
+.now{margin:14px 0;background:linear-gradient(135deg,var(--card),#1b2540);border:1px solid var(--line);border-radius:22px;padding:20px;text-align:center}
+.now .em{font-size:56px}.now .t{font-size:52px;font-weight:700;direction:ltr}
+.now .meta{display:flex;justify-content:center;gap:18px;color:var(--mut);font-size:14px;margin-top:6px}
+.days{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.day{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 4px;text-align:center;font-size:13px}
+.day .em{font-size:24px}.day b{display:block;direction:ltr}.day small{color:var(--mut);direction:ltr;display:block}
+.state{text-align:center;color:var(--mut);padding:14px}.state.err{color:#fb7185}
+&lt;/style&gt;
+
+&lt;div class="app"&gt;
+  &lt;form id="form"&gt;
+    &lt;input id="city" value="Tehran" aria-label="نام شهر" placeholder="نام شهر (انگلیسی)"&gt;
+    &lt;button&gt;جستجو&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;p class="state" id="state"&gt;&lt;/p&gt;
+  &lt;div class="now" id="now" hidden&gt;
+    &lt;h2 id="place" style="margin:0 0 6px"&gt;&lt;/h2&gt;
+    &lt;div class="em" id="em"&gt;&lt;/div&gt;
+    &lt;div class="t" id="temp"&gt;&lt;/div&gt;
+    &lt;div id="desc"&gt;&lt;/div&gt;
+    &lt;div class="meta"&gt;&lt;span id="wind"&gt;&lt;/span&gt;&lt;span id="hum"&gt;&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="days" id="days"&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+// کد وضعیت هوا (WMO) ← توضیح فارسی و ایموجی
+const CODES = {
+  0: ["آسمان صاف", "☀️"], 1: ["عمدتاً صاف", "🌤️"], 2: ["کمی ابری", "⛅"], 3: ["ابری", "☁️"],
+  45: ["مه", "🌫️"], 48: ["مه یخ‌زده", "🌫️"], 51: ["نم‌نم باران", "🌦️"], 53: ["نم‌نم باران", "🌦️"], 55: ["نم‌نم باران", "🌦️"],
+  61: ["باران ضعیف", "🌧️"], 63: ["باران", "🌧️"], 65: ["باران شدید", "🌧️"], 71: ["برف ضعیف", "🌨️"], 73: ["برف", "🌨️"], 75: ["برف شدید", "❄️"],
+  80: ["رگبار", "🌧️"], 81: ["رگبار", "🌧️"], 82: ["رگبار شدید", "⛈️"], 95: ["رعدوبرق", "⛈️"], 96: ["رعدوبرق و تگرگ", "⛈️"], 99: ["رعدوبرق و تگرگ", "⛈️"],
+};
+const info = (code) =&gt; CODES[code] || ["نامشخص", "❔"];
+const $ = (id) =&gt; document.getElementById(id);
+
+function setState(text, error = false) { $("state").textContent = text; $("state").className = "state" + (error ? " err" : ""); }
+async function getJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("خطای سرور " + res.status);
+  return res.json();
+}
+
+async function loadWeather(name) {
+  setState("در حال دریافت…");
+  try {
+    // درخواست ۱: تبدیل نام شهر به مختصات
+    const geo = await getJSON("https://geocoding-api.open-meteo.com/v1/search?count=1&amp;language=fa&amp;name=" + encodeURIComponent(name));
+    if (!geo.results || !geo.results.length) return setState("شهری با این نام پیدا نشد 😕", true);
+    const { latitude, longitude, name: place, country } = geo.results[0];
+
+    // درخواست ۲: آب‌وهوا با مختصات (وابسته به نتیجه‌ی اول)
+    const w = await getJSON("https://api.open-meteo.com/v1/forecast?timezone=auto&amp;forecast_days=5&amp;latitude=" + latitude + "&amp;longitude=" + longitude +
+      "&amp;current=temperature_2m,weather_code,wind_speed_10m,relative_humidity_2m&amp;daily=weather_code,temperature_2m_max,temperature_2m_min");
+
+    const [desc, emoji] = info(w.current.weather_code);
+    $("place").textContent = place + (country ? "، " + country : "");
+    $("em").textContent = emoji;
+    $("temp").textContent = Math.round(w.current.temperature_2m) + "°";
+    $("desc").textContent = desc;
+    $("wind").textContent = "💨 " + Math.round(w.current.wind_speed_10m) + " km/h";
+    $("hum").textContent = "💧 " + w.current.relative_humidity_2m + "٪";
+    $("now").hidden = false;
+
+    $("days").innerHTML = "";
+    w.daily.time.forEach((date, i) =&gt; {
+      const d = document.createElement("div");
+      d.className = "day";
+      d.innerHTML = "&lt;small&gt;&lt;/small&gt;&lt;div class='em'&gt;&lt;/div&gt;&lt;b&gt;&lt;/b&gt;&lt;small&gt;&lt;/small&gt;";
+      const [first, , , last] = d.children;
+      first.textContent = new Date(date).toLocaleDateString("fa-IR", { weekday: "short" });
+      d.children[1].textContent = info(w.daily.weather_code[i])[1];
+      d.children[2].textContent = Math.round(w.daily.temperature_2m_max[i]) + "°";
+      last.textContent = Math.round(w.daily.temperature_2m_min[i]) + "°";
+      $("days").append(d);
+    });
+    setState("");
+    try { localStorage.setItem("city", name); } catch (e) {}
+  } catch (err) {
+    setState("دریافت نشد: " + err.message, true);
+  }
+}
+
+$("form").addEventListener("submit", (e) =&gt; { e.preventDefault(); const n = $("city").value.trim(); if (n) loadWeather(n); });
+let last = "Tehran";
+try { last = localStorage.getItem("city") || last; } catch (e) {}
+$("city").value = last;
+loadWeather(last);
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>weather-app/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: دو درخواست وابسته</h2></div><p>API آب‌وهوا مختصات می‌خواهد، نه نام شهر. پس اول از سرویس جغرافیایی (geocoding) مختصات را می‌گیریم و بعد با آن، آب‌وهوا را. چون درخواست دوم به نتیجه‌ی اولی وابسته است، با <code>await</code> پشت‌سرهم نوشته می‌شوند. اگر شهر پیدا نشد، همان‌جا با پیام روشن برمی‌گردیم.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const geo = await getJSON(geoUrl);
+const { latitude, longitude } = geo.results[0];
+const w = await getJSON(forecastUrl(latitude, longitude));</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: جدول کدها</h2></div><p>API فقط یک عدد برای وضعیت هوا می‌دهد (مثلاً ۶۳). یک آبجکت جدول کد به توضیح و ایموجی نگه می‌داریم و با تابع <code>info</code> می‌خوانیم؛ اگر کد ناشناخته بود، مقدار پیش‌فرض برمی‌گرداند تا برنامه نشکند. این الگوی «آبجکت به‌جای if و else طولانی» را همیشه به کار ببر.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const info = (code) =&gt; CODES[code] || ["نامشخص", "❔"];
+const [desc, emoji] = info(w.current.weather_code);</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: پیش‌بینی چندروزه</h2></div><p>داده‌ی روزانه به‌صورت چند آرایه‌ی موازی می‌آید: <code>time</code>، <code>temperature_2m_max</code> و ... هرکدام ۵ عضو. با <code>forEach</code> روی تاریخ‌ها می‌چرخیم و از شماره‌ی <code>i</code> برای خواندن بقیه‌ی آرایه‌ها استفاده می‌کنیم. نام روز با <code>toLocaleDateString("fa-IR")</code> فارسی می‌شود.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>w.daily.time.forEach((date, i) =&gt; {
+  const max = w.daily.temperature_2m_max[i];
+});</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>Async/Await و درخواست‌های وابسته (درس ۳۰)</li><li>Fetch و مدیریت خطا (درس ۳۱)</li><li>Destructuring آبجکت و آرایه (درس ۱۳)</li><li><code>Date</code> و <code>toLocaleDateString</code> (درس ۱۵)</li><li>آبجکت به‌عنوان جدول و <code>localStorage</code> (درس‌های ۳ و ۲۷)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">فرض اینکه داده همیشه هست</div><p>اگر شهر وجود نداشته باشد <code>geo.results</code> اصلاً وجود ندارد. قبل از خواندن <code>results[0]</code> حتماً چک کن.</p></div><div class="note warn"><div class="note-title">درخواست‌های موازی در جای وابسته</div><p>اگر دو درخواست به هم وابسته نیستند از <code>Promise.all</code> استفاده کن؛ اینجا وابسته‌اند، پس پشت‌سرهم می‌روند.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>دکمه‌ی «موقعیت من» با <code>navigator.geolocation</code> اضافه کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>مختصات را مستقیم به درخواست دوم بده و درخواست اول را رد کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>تغییر واحد سلسیوس و فارنهایت.</p><details class="ex-ans"><summary>راهنمایی</summary><p>فرمول <code>C × 9/5 + 32</code> و یک دکمه‌ی تغییر واحد.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>تم برنامه با وضعیت هوا عوض شود (آفتابی، بارانی).</p><details class="ex-ans"><summary>راهنمایی</summary><p>یک کلاس روی <code>body</code> بر اساس کد هوا بگذار.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-weather-app.zip" download>دانلود project-weather-app.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-image-gallery.html">→ پروژه‌ی گالری تصاویر با Image API</a><a href="project-one-page-site.html">پروژه‌ی سایت تک‌صفحه‌ای ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

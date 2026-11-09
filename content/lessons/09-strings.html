@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۲ · درس ۱ | متدهای String</title><meta name="description" content="رشته‌ها تغییرناپذیرند: هر متد یک رشته‌ی جدید برمی‌گرداند و رشته‌ی اصلی دست نمی‌خورد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/09-strings.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۲ · درس ۱ | متدهای String"><meta property="og:description" content="رشته‌ها تغییرناپذیرند: هر متد یک رشته‌ی جدید برمی‌گرداند و رشته‌ی اصلی دست نمی‌خورد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/09-strings.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۲ · درس ۱</span><h1>متدهای String</h1><p>رشته‌ها تغییرناپذیرند: هر متد یک رشته‌ی جدید برمی‌گرداند و رشته‌ی اصلی دست نمی‌خورد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">طول، دسترسی و جستجو</a></li><li><a href="#s2">تغییر ظاهر متن</a></li><li><a href="#s3">slice و substring</a></li><li><a href="#s4">split، padStart و padEnd</a></li><li><a href="#s5">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>طول، دسترسی و جستجو</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const s = "Hello Rayvo";
+console.log(s.length, s[0], s.at(-1));
+console.log(s.indexOf("Rayvo"), s.includes("Hello"));
+console.log(s.startsWith("He"), s.endsWith("vo"));</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>تغییر ظاهر متن</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const t = "  js is fun  ";
+console.log(t.trim());
+console.log(t.toUpperCase(), t.toLowerCase());
+console.log("ab".repeat(3));
+console.log("a-b-a".replace("a", "x"));     // فقط اولی
+console.log("a-b-a".replaceAll("a", "x"));  // همه</code></pre></div></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>slice و substring</h2></div><p>هر دو بخشی از متن را جدا می‌کنند. slice اندیس منفی را می‌فهمد و substring نه.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const w = "JavaScript";
+console.log(w.slice(0, 4));    // Java
+console.log(w.slice(-6));      // Script
+console.log(w.substring(4, 10));</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>split، padStart و padEnd</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log("a,b,c".split(","));
+console.log("hello".split(""));
+console.log("7".padStart(3, "0"));   // 007
+console.log("ok".padEnd(5, "."));    // ok...
+console.log((1234567).toLocaleString("en-US"));</code></pre></div></div><div class="note warn"><div class="note-title">اشتباه رایج</div><p>نوشتن <code>s.toUpperCase()</code> بدون ذخیره‌ی نتیجه فایده ندارد، چون s عوض نمی‌شود. نتیجه را در متغیر بریز.</p></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>حرف اول یک کلمه را بزرگ کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const cap = (w) =&gt; w[0].toUpperCase() + w.slice(1);
+console.log(cap("rayvo"));</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>جمله را به کلمه‌ها بشکن و تعدادشان را بگو</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log("من جاوااسکریپت یاد می‌گیرم".split(" ").length);</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۳</div><p>چالش: رشته‌ای را برعکس کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log("rayvo".split("").reverse().join(""));</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="08-scope.html">→ Scope، Hoisting و Closure</a><a href="10-numbers.html">عدد، تبدیل نوع و Math ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

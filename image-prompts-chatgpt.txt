@@ -1,0 +1,18 @@
+پرامت تصویرها برای دوره‌ی جاوااسکریپت (هر پرامت را جدا در ChatGPT بده)
+==========================================================================
+
+۱) تصویر اشتراک‌گذاری og-rayvo.png (۱۲۰۰×۶۳۰) ← جایگزین public/assets/img/og-rayvo.png
+Create a 1200x630 dark premium banner for a JavaScript course by Rayvo. Deep black-navy background with a subtle grid,
+a large glowing neon cyan rounded-square frame in the center containing a bold futuristic "JS" monogram, with a small code editor
+window with colorful JavaScript code behind it. Below it the text "JavaScript by RAYVO". Cinematic, minimal, clean, no extra text.
+
+۲) آیکون برنامه / favicon (مربع ۱۰۲۴×۱۰۲۴) ← بعد به PNG های 512، 192، 180، 48، 32، 16 تبدیل کن
+A square app icon on a dark navy background: a glowing neon cyan rounded-square outline with a modern minimal "JS" mark in the center,
+soft cyan glow, very clean, no small text, high contrast so it stays readable at 16px.
+
+۳) کاور صفحه‌ی فروش (۱۲۰۰×۶۳۰) ← public/assets/img/course-cover.png و نسخه‌ی webp
+A cinematic neon scene: glowing blue glass bars growing like stairs toward an upward arrow (progress from zero to pro),
+a floating code editor window showing JavaScript code, floating translucent icons of a browser window, a play button and a gear.
+Dark background, blue and cyan neon lighting, no text.
+
+۴) عکس مدرس (مربع، حداقل ۵۰۰×۵۰۰) ← در پنل «مدرس، تیزر و قیمت» آپلود کن (عکس واقعی خودت بهتر است)

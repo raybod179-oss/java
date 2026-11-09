@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۳ · درس ۵ | Polymorphism و Encapsulation</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/20-poly-encap.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۳ · درس ۵ | Polymorphism و Encapsulation"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/20-poly-encap.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۳ · درس ۵</span><h1>Polymorphism و Encapsulation</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">Polymorphism: یک نام، چند رفتار</a></li><li><a href="#s2">Encapsulation: مخفی کردن جزئیات</a></li><li><a href="#s3">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>Polymorphism: یک نام، چند رفتار</h2></div><p>کلاس‌های مختلف متدی با یک نام دارند ولی هرکدام کار خودش را می‌کند. کد بیرونی بدون نگرانی از نوع واقعی آبجکت فقط متد را صدا می‌زند.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class Payment { pay(amount) { return "پرداخت"; } }
+class Card extends Payment {
+  pay(amount) { return `کارت بانکی: ${amount}`; }
+}
+class Wallet extends Payment {
+  pay(amount) { return `کیف پول: ${amount}`; }
+}
+const methods = [new Card(), new Wallet()];
+methods.forEach((m) =&gt; console.log(m.pay(50000)));</code></pre></div></div><p>اگر فردا روش پرداخت سوم اضافه شود، کد چرخه‌ی بالا هیچ تغییری نمی‌کند. این قدرت اصلی Polymorphism است.</p></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>Encapsulation: مخفی کردن جزئیات</h2></div><p>فیلدهایی که با <code>#</code> شروع می‌شوند خصوصی‌اند و فقط داخل کلاس دیده می‌شوند. بقیه‌ی برنامه فقط از متدهای مجاز استفاده می‌کند.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class BankAccount {
+  #balance = 0;                     // خصوصی
+  deposit(n) {
+    if (n &lt;= 0) throw new Error("مبلغ نامعتبر");
+    this.#balance += n;
+  }
+  withdraw(n) {
+    if (n &gt; this.#balance) throw new Error("موجودی کافی نیست");
+    this.#balance -= n;
+  }
+  get balance() { return this.#balance; }
+}
+const acc = new BankAccount();
+acc.deposit(100);
+acc.withdraw(30);
+console.log(acc.balance);
+console.log(acc.balance = 99999, acc.balance);   // قابل تغییر از بیرون نیست
+try { acc.withdraw(1000); } catch (e) { console.log("خطا:", e.message); }</code></pre></div></div><div class="note tip"><div class="note-title">فایده</div><p>بدون Encapsulation هر جای برنامه می‌توانست balance را مستقیم عوض کند و پیدا کردن باگ سخت می‌شد. حالا همه‌ی تغییرات از یک مسیر کنترل‌شده می‌گذرند.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>کلاس Cat و Dog با متد speak مجزا و فراخوانی هر دو در یک حلقه</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class Cat { speak() { return "میو"; } }
+class Dog { speak() { return "هاپ"; } }
+[new Cat(), new Dog()].forEach((a) =&gt; console.log(a.speak()));</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>کلاس Wallet با موجودی خصوصی و متد add</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class Wallet {
+  #money = 0;
+  add(n) { this.#money += n; return this; }
+  get money() { return this.#money; }
+}
+console.log(new Wallet().add(5).add(7).money);</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="19-inheritance.html">→ ارث‌بری (Inheritance)</a><a href="21-getter-static.html">Getter، Setter و Static ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۴ | پروژه‌ی دارک و لایت</title><meta name="description" content="تم تیره و روشن امروز استاندارد است. در این پروژه تمی می‌سازی که اول به انتخاب سیستم‌عامل کاربر نگاه می‌کند، با دکمه عوض می‌شود و انتخاب را در مرورگر به خاط"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-theme.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۴ | پروژه‌ی دارک و لایت"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۴</span><h1>پروژه‌ی دارک و لایت</h1><p>تم تیره و روشن امروز استاندارد است. در این پروژه تمی می‌سازی که اول به انتخاب سیستم‌عامل کاربر نگاه می‌کند، با دکمه عوض می‌شود و انتخاب را در مرورگر به خاطر می‌سپارد. همه‌ی رنگ‌ها با متغیرهای CSS هستند، پس با یک صفت روی <code>html</code> کل سایت عوض می‌شود.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: رنگ‌ها را متغیر کن</a></li><li><a href="#s4">قدم ۲: انتخاب اولیه</a></li><li><a href="#s5">قدم ۳: ذخیره‌ی انتخاب</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="360"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#f4f7fc;--card:#ffffff;--line:#d5deee;--text:#0e1b2e;--mut:#55688a;--a:#b45309}
+[data-theme="dark"]{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+body{transition:background .3s,color .3s}
+.page{width:min(480px,100%)}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+h1{margin:0;font-size:22px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:12px;transition:background .3s,border-color .3s}
+.card h2{margin:0 0 6px;font-size:16px;color:var(--a)}.card p{margin:0;color:var(--mut);line-height:1.9}
+&lt;/style&gt;
+
+&lt;div class="page"&gt;
+  &lt;header&gt;
+    &lt;h1&gt;تم تیره و روشن&lt;/h1&gt;
+    &lt;button id="toggle" aria-pressed="false"&gt;🌙 تیره&lt;/button&gt;
+  &lt;/header&gt;
+  &lt;div class="card"&gt;&lt;h2&gt;کارت اول&lt;/h2&gt;&lt;p&gt;همه‌ی رنگ‌ها از متغیرهای CSS می‌آیند.&lt;/p&gt;&lt;/div&gt;
+  &lt;div class="card"&gt;&lt;h2&gt;کارت دوم&lt;/h2&gt;&lt;p&gt;انتخاب تو در مرورگر ذخیره می‌شود.&lt;/p&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const root = document.documentElement;
+const button = document.getElementById("toggle");
+
+function getSaved() {
+  try { return localStorage.getItem("theme"); } catch (e) { return null; }
+}
+function save(theme) {
+  try { localStorage.setItem("theme", theme); } catch (e) { /* مرورگر اجازه نداد */ }
+}
+
+const prefersDark = window.matchMedia &amp;&amp; window.matchMedia("(prefers-color-scheme: dark)").matches;
+let theme = getSaved() || (prefersDark ? "dark" : "light");   // اول انتخاب خود کاربر، بعد سیستم
+
+function apply(t) {
+  root.setAttribute("data-theme", t);
+  button.textContent = t === "dark" ? "☀️ روشن" : "🌙 تیره";
+  button.setAttribute("aria-pressed", String(t === "dark"));
+}
+
+button.addEventListener("click", () =&gt; {
+  theme = theme === "dark" ? "light" : "dark";
+  apply(theme);
+  save(theme);
+});
+apply(theme);
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>theme/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: رنگ‌ها را متغیر کن</h2></div><p>همه‌ی رنگ‌های صفحه را فقط یک‌بار در <code>:root</code> تعریف می‌کنیم و در بقیه‌ی CSS با <code>var(--bg)</code> می‌خوانیم. برای تم تیره، همین متغیرها زیر انتخابگر <code>[data-theme="dark"]</code> دوباره مقدار می‌گیرند. جاوااسکریپت فقط یک صفت را عوض می‌کند و CSS بقیه را انجام می‌دهد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>CSS</span><span class="demo-tag">css</span></div><pre><code>:root { --bg: #f4f7fc; --text: #0e1b2e; }
+[data-theme="dark"] { --bg: #070b16; --text: #e8f0ff; }
+body { background: var(--bg); color: var(--text); }</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: انتخاب اولیه</h2></div><p>ترتیب تصمیم‌گیری مهم است: اگر کاربر قبلاً انتخاب کرده، همان را بگیر؛ وگرنه ببین سیستم‌عاملش تیره است یا نه (<code>prefers-color-scheme</code>). به این ترتیب بار اولی که وارد می‌شود هم تجربه‌ی درست دارد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>let theme = getSaved() || (prefersDark ? "dark" : "light");</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: ذخیره‌ی انتخاب</h2></div><p><code>localStorage</code> ممکن است خطا بدهد (حالت خصوصی مرورگر یا iframe بدون اجازه)، برای همین <code>getItem</code> و <code>setItem</code> داخل <code>try/catch</code> هستند تا برنامه نشکند. در همین پیش‌نمایش زنده هم ذخیره‌سازی بسته است و برنامه بدون مشکل ادامه می‌دهد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>try { localStorage.setItem("theme", theme); } catch (e) {}</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>متغیرهای CSS و صفت <code>data-*</code> (درس ۲۵)</li><li><code>localStorage</code> و <code>try/catch</code> (درس‌های ۲۷ و ۳۰)</li><li>عملگر <code>||</code> برای مقدار پیش‌فرض (درس ۴)</li><li><code>matchMedia</code> و BOM (درس ۲۷)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">چشمک زدن تم هنگام لود</div><p>اگر تم را بعد از لود صفحه بخوانی، کاربر لحظه‌ای تم اشتباه می‌بیند. در پروژه‌ی واقعی یک اسکریپت کوچک را در <code>head</code> بگذار.</p></div><div class="note warn"><div class="note-title">ذخیره‌ی مقدار بولین</div><p><code>localStorage</code> فقط رشته نگه می‌دارد؛ <code>"false"</code> در شرط truthy است! رشته‌های واضح مثل <code>"dark"</code> امن‌ترند.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>سه تم بساز: روشن، تیره و خودکار (طبق سیستم).</p><details class="ex-ans"><summary>راهنمایی</summary><p>مقدار <code>"auto"</code> را ذخیره کن و تغییرات <code>matchMedia</code> را با <code>addEventListener("change")</code> بشنو.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>تم را با انیمیشن دایره‌ای عوض کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>از <code>document.startViewTransition</code> استفاده کن (اگر مرورگر پشتیبانی کرد).</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>رنگ اصلی را هم انتخاب‌پذیر کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>یک <code>input type="color"</code> بگذار و <code>--a</code> را با <code>style.setProperty</code> عوض کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-theme.zip" download>دانلود project-theme.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-accordion.html">→ پروژه‌ی منوی آکاردئون</a><a href="project-countdown.html">پروژه‌ی شمارش معکوس سال نو ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

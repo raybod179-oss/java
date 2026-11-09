@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۲ · درس ۲ | عدد، تبدیل نوع و Math</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/10-numbers.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۲ · درس ۲ | عدد، تبدیل نوع و Math"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/10-numbers.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۲ · درس ۲</span><h1>عدد، تبدیل نوع و Math</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">تبدیل رشته به عدد</a></li><li><a href="#s2">متدهای Number</a></li><li><a href="#s3">Math</a></li><li><a href="#s4">عدد تصادفی</a></li><li><a href="#s5">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>تبدیل رشته به عدد</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log(Number("42"), +"3.5");
+console.log(Number("abc"));          // NaN
+console.log(parseInt("42px"), parseFloat("3.14abc"));
+console.log(String(99) + "!", (99).toString());
+console.log(Boolean(0), Boolean("متن"));</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>متدهای Number</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const n = 3.14159;
+console.log(n.toFixed(2));            // "3.14" (رشته است)
+console.log(Number.isInteger(5), Number.isInteger(5.5));
+console.log(0.1 + 0.2);               // 0.30000000000000004
+console.log((0.1 + 0.2).toFixed(2));</code></pre></div></div><div class="note warn"><div class="note-title">نکته</div><p>خطای 0.1 + 0.2 ربطی به جاوااسکریپت ندارد؛ کامپیوتر اعداد اعشاری را دودویی ذخیره می‌کند. برای پول، قیمت را به صورت عدد صحیح (ریال) نگه دار.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>Math</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log(Math.round(4.5), Math.floor(4.9), Math.ceil(4.1), Math.trunc(-4.9));
+console.log(Math.max(3, 9, 5), Math.min(3, 9, 5));
+console.log(Math.max(...[4, 8, 2]));
+console.log(Math.abs(-7), Math.sqrt(81), Math.pow(2, 8));</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>عدد تصادفی</h2></div><p><code>Math.random()</code> عددی بین ۰ و کمتر از ۱ می‌دهد. برای بازه‌ی مشخص این فرمول را حفظ کن:</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const rand = (min, max) =&gt; Math.floor(Math.random() * (max - min + 1)) + min;
+const r = rand(1, 6);
+console.log(r &gt;= 1 &amp;&amp; r &lt;= 6);   // true</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>رشته‌ی "12.5" را به عدد تبدیل کن و دو برابرش را چاپ کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log(Number("12.5") * 2);</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>تابعی بنویس که قیمت و درصد تخفیف بگیرد و قیمت نهایی گرد شده را بدهد</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const final = (p, d) =&gt; Math.round(p - (p * d) / 100);
+console.log(final(200000, 15));</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="09-strings.html">→ متدهای String</a><a href="11-array-basics.html">آرایه‌ها: افزودن، حذف و جستجو ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

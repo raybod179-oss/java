@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۳ · درس ۳ | کلاس‌ها و Constructor</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/18-classes.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۳ · درس ۳ | کلاس‌ها و Constructor"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/18-classes.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۳ · درس ۳</span><h1>کلاس‌ها و Constructor</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">چرا کلاس؟</a></li><li><a href="#s2">نکات مهم</a></li><li><a href="#s3">مثال کاربردی: سبد خرید</a></li><li><a href="#s4">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>چرا کلاس؟</h2></div><p>وقتی چند آبجکت هم‌شکل می‌خواهی (۱۰۰ کاربر، ۵۰ محصول)، کلاس یک قالب است و هر آبجکت یک نمونه (Instance) از آن.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class User {
+  constructor(name, age) {   // هنگام new اجرا می‌شود
+    this.name = name;
+    this.age = age;
+  }
+  greet() {
+    return `سلام، من ${this.name} هستم`;
+  }
+  birthday() {
+    this.age++;
+  }
+}
+const u1 = new User("Ali", 25);
+const u2 = new User("Sara", 30);
+u1.birthday();
+console.log(u1.greet(), u1.age);
+console.log(u2);
+console.log(u1 instanceof User);</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>نکات مهم</h2></div><p>constructor همیشه همین نام را دارد. بدون <code>new</code> نمی‌شود کلاس را صدا زد و متدها بین همه‌ی نمونه‌ها مشترک‌اند (در حافظه فقط یک بار ذخیره می‌شوند).</p><div class="note warn"><div class="note-title">اشتباه رایج</div><p>یادت نرود داخل constructor و متدها برای دسترسی به ویژگی‌ها <code>this.</code> بنویسی. بدون this، آن متغیر فقط یک متغیر محلی است.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>مثال کاربردی: سبد خرید</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class Cart {
+  constructor() { this.items = []; }
+  add(name, price) { this.items.push({ name, price }); return this; }
+  total() { return this.items.reduce((s, i) =&gt; s + i.price, 0); }
+}
+const cart = new Cart();
+cart.add("کتاب", 90).add("مداد", 10);
+console.log(cart.total(), cart.items.length);</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>کلاس Product با name و price و متد discount(percent) که قیمت جدید را برگرداند</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class Product {
+  constructor(name, price) { this.name = name; this.price = price; }
+  discount(p) { return this.price - (this.price * p) / 100; }
+}
+console.log(new Product("لپ‌تاپ", 1000).discount(10));</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>کلاس Counter با increment و reset</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class Counter {
+  constructor() { this.n = 0; }
+  increment() { this.n++; return this; }
+  reset() { this.n = 0; }
+}
+const c = new Counter();
+console.log(c.increment().increment().n);</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="17-call-bind.html">→ call، apply و bind</a><a href="19-inheritance.html">ارث‌بری (Inheritance) ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

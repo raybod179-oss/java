@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۵ | پروژه‌ی شمارش معکوس سال نو</title><meta name="description" content="شمارش معکوس تا اول فروردین، پروژه‌ای زیبا و پرکاربرد برای یادگیری Date و تایمر است. روز، ساعت، دقیقه و ثانیه را هر ثانیه به‌روز می‌کنی، با اعداد فارسی، و و"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-countdown.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۵ | پروژه‌ی شمارش معکوس سال نو"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۵</span><h1>پروژه‌ی شمارش معکوس سال نو</h1><p>شمارش معکوس تا اول فروردین، پروژه‌ای زیبا و پرکاربرد برای یادگیری Date و تایمر است. روز، ساعت، دقیقه و ثانیه را هر ثانیه به‌روز می‌کنی، با اعداد فارسی، و وقتی به صفر رسید پیام تبریک نشان می‌دهی.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: زمان مقصد</a></li><li><a href="#s4">قدم ۲: تبدیل به روز و ساعت</a></li><li><a href="#s5">قدم ۳: به‌روزرسانی هر ثانیه</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="360"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+.wrap{text-align:center;width:min(520px,100%)}
+h1{font-size:22px;margin:0 0 6px}.target{color:var(--mut);margin:0 0 20px;font-size:14px}
+.boxes{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px 4px}
+.box b{display:block;font-size:34px;color:var(--a);font-variant-numeric:tabular-nums}
+.box span{font-size:12px;color:var(--mut)}
+select{font:inherit;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px;margin-bottom:18px}
+#done{font-size:24px;color:#4ade80}
+&lt;/style&gt;
+
+&lt;div class="wrap"&gt;
+  &lt;h1&gt;شمارش معکوس سال نو&lt;/h1&gt;
+  &lt;select id="which" aria-label="انتخاب مقصد"&gt;
+    &lt;option value="nowruz"&gt;سال نو ۱۴۰۶ (۱ فروردین)&lt;/option&gt;
+    &lt;option value="gregorian"&gt;سال نو میلادی ۲۰۲۷&lt;/option&gt;
+  &lt;/select&gt;
+  &lt;p class="target" id="target"&gt;&lt;/p&gt;
+  &lt;div class="boxes" id="boxes"&gt;
+    &lt;div class="box"&gt;&lt;b id="d"&gt;۰۰&lt;/b&gt;&lt;span&gt;روز&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="box"&gt;&lt;b id="h"&gt;۰۰&lt;/b&gt;&lt;span&gt;ساعت&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="box"&gt;&lt;b id="m"&gt;۰۰&lt;/b&gt;&lt;span&gt;دقیقه&lt;/span&gt;&lt;/div&gt;
+    &lt;div class="box"&gt;&lt;b id="s"&gt;۰۰&lt;/b&gt;&lt;span&gt;ثانیه&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;p id="done" hidden&gt;سال نو مبارک! 🎉&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+// مقصد: شروع روز اول سال نو (نیمه‌شب به وقت تهران)
+const TARGETS = {
+  nowruz: { label: "۱ فروردین ۱۴۰۶", date: new Date("2027-03-21T00:00:00+03:30") },
+  gregorian: { label: "۱ ژانویه ۲۰۲۷", date: new Date("2027-01-01T00:00:00+03:30") },
+};
+
+const select = document.getElementById("which");
+const boxes = document.getElementById("boxes");
+const done = document.getElementById("done");
+const el = (id) =&gt; document.getElementById(id);
+
+const fa = (n) =&gt; String(n).padStart(2, "0").replace(/\d/g, (d) =&gt; "۰۱۲۳۴۵۶۷۸۹"[d]);
+
+function tick() {
+  const target = TARGETS[select.value];
+  el("target").textContent = "تا " + target.label;
+  const diff = target.date - Date.now();            // اختلاف به میلی‌ثانیه
+  if (diff &lt;= 0) {
+    boxes.hidden = true;
+    done.hidden = false;
+    return;
+  }
+  boxes.hidden = false;
+  done.hidden = true;
+  const total = Math.floor(diff / 1000);
+  el("d").textContent = fa(Math.floor(total / 86400));
+  el("h").textContent = fa(Math.floor((total % 86400) / 3600));
+  el("m").textContent = fa(Math.floor((total % 3600) / 60));
+  el("s").textContent = fa(total % 60);
+}
+
+select.addEventListener("change", tick);
+setInterval(tick, 1000);
+tick();
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>countdown/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: زمان مقصد</h2></div><p>مقصد را با <code>new Date("2027-03-21T00:00:00+03:30")</code> می‌سازیم، یعنی شروع روز اول فروردین. بخش <code>+03:30</code> منطقه‌ی زمانی ایران است تا نتیجه روی همه‌ی دستگاه‌ها یکسان باشد. دو مقصد را داخل یک آبجکت نگه می‌داریم و با <code>select</code> بینشان جابه‌جا می‌شویم.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const target = new Date("2027-03-21T00:00:00+03:30");
+const diff = target - Date.now();   // میلی‌ثانیه</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: تبدیل به روز و ساعت</h2></div><p>اختلاف به میلی‌ثانیه است. اول به ثانیه تبدیل می‌کنیم و بعد با تقسیم و باقیمانده (<code>%</code>) روز، ساعت و دقیقه را جدا می‌کنیم. اینجا عملگر باقیمانده که در درس عملگرها دیدی کاربرد واقعی پیدا می‌کند.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const total = Math.floor(diff / 1000);
+const days = Math.floor(total / 86400);
+const hours = Math.floor((total % 86400) / 3600);</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: به‌روزرسانی هر ثانیه</h2></div><p><code>setInterval(tick, 1000)</code> تابع را هر ثانیه صدا می‌زند. حتماً یک‌بار هم مستقیم <code>tick()</code> را صدا می‌زنیم تا کاربر یک ثانیه صفحه‌ی خالی نبیند. تابع <code>fa</code> عدد را دو رقمی و فارسی می‌کند.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>setInterval(tick, 1000);
+tick();</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>Date و اختلاف تاریخ‌ها (درس ۱۵)</li><li><code>setInterval</code> (درس ۲۶)</li><li>عملگر <code>%</code> و <code>Math.floor</code> (درس‌های ۴ و ۱۰)</li><li>Regex و <code>replace</code> برای اعداد فارسی (درس‌های ۹ و ۱۵)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">تبدیل نکردن منطقه‌ی زمانی</div><p>بدون <code>+03:30</code>، تاریخ بر اساس ساعت دستگاه کاربر حساب می‌شود و برای ایرانی‌های خارج کشور عدد متفاوت می‌شود.</p></div><div class="note warn"><div class="note-title">اتکا به ساعت دستگاه</div><p>اگر ساعت گوشی غلط باشد، شمارش هم غلط است. برای اپ جدی، زمان را از سرور بگیر.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>زمان مقصد را کاربر خودش با <code>input type="datetime-local"</code> بنویسد.</p><details class="ex-ans"><summary>راهنمایی</summary><p>مقدار input را به <code>new Date(value)</code> بده و ذخیره‌اش کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>جشن پایان: با رسیدن به صفر، یک انیمیشن کانفتی ساده نشان بده.</p><details class="ex-ans"><summary>راهنمایی</summary><p>چند <code>div</code> رنگی با <code>@keyframes</code> و <code>Math.random</code> برای موقعیت بساز.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>عنوان تب مرورگر هم شمارش معکوس را نشان دهد.</p><details class="ex-ans"><summary>راهنمایی</summary><p><code>document.title</code> را داخل <code>tick</code> به‌روز کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-countdown.zip" download>دانلود project-countdown.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-theme.html">→ پروژه‌ی دارک و لایت</a><a href="project-slider.html">پروژه‌ی اسلایدر نظرات ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

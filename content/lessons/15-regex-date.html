@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۲ · درس ۷ | Regex و Date</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/15-regex-date.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۲ · درس ۷ | Regex و Date"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/15-regex-date.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۲ · درس ۷</span><h1>Regex و Date</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">Regex: الگوی جستجو در متن</a></li><li><a href="#s2">Date</a></li><li><a href="#s3">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>Regex: الگوی جستجو در متن</h2></div><p>بین دو اسلش می‌نویسیم. <code>\d</code> رقم، <code>\w</code> حرف یا رقم، <code>+</code> یک یا بیشتر، <code>^</code> و <code>$</code> ابتدا و انتهای متن.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const phone = /^09\d{9}$/;
+console.log(phone.test("09123456789"));   // true
+console.log(phone.test("0912"));          // false
+console.log("a1b22c333".match(/\d+/g));   // [ "1", "22", "333" ]
+console.log("2026-11-04".replace(/-/g, "/"));
+const email = /^[\w.-]+@[\w.-]+\.\w+$/;
+console.log(email.test("me@rayvo.dev"));</code></pre></div></div><div class="note warn"><div class="note-title">نکته</div><p>فلگ <code>g</code> یعنی همه‌ی موردها، نه فقط اولی. regex برای اعتبارسنجی اولیه خوب است، اما اعتبارسنجی نهایی همیشه باید در سرور هم انجام شود.</p></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>Date</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const d = new Date(2026, 10, 4, 15, 30);   // ماه از صفر: 10 یعنی نوامبر
+console.log(d.getFullYear(), d.getMonth() + 1, d.getDate());
+console.log(d.getDay());                  // 0 یکشنبه ... 6 شنبه
+const next = new Date(d);
+next.setDate(next.getDate() + 30);        // 30 روز بعد
+console.log(next.toISOString().slice(0, 10));
+const diff = new Date("2026-12-01") - new Date("2026-11-01");
+console.log(diff / (1000 * 60 * 60 * 24), "روز");</code></pre></div></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log(new Date("2026-11-04T10:00:00Z").toLocaleDateString("fa-IR"));
+console.log(Date.now() &gt; 0);</code></pre></div></div><div class="note warn"><div class="note-title">دام معروف</div><p>شماره‌ی ماه در Date از صفر شروع می‌شود، ولی روز از یک.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>بررسی کن رشته فقط از رقم تشکیل شده یا نه</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const onlyDigits = (s) =&gt; /^\d+$/.test(s);
+console.log(onlyDigits("1234"), onlyDigits("12a4"));</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>فاصله‌ی روزها بین دو تاریخ را حساب کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const days = (a, b) =&gt; Math.round((new Date(b) - new Date(a)) / 86400000);
+console.log(days("2026-01-01", "2026-03-01"));</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="14-map-set.html">→ Map، Set و متدهای Object</a><a href="16-this.html">آبجکت‌ها و کلمه‌ی this ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۱۴ | پروژه‌ی تودولیست با LocalStorage</title><meta name="description" content="تودولیستِ واقعی: افزودن، انجام شدن، ویرایش، حذف، فیلتر (همه، فعال، انجام‌شده) و شمارنده‌ی باقی‌مانده، با ذخیره در localStorage که بعد از رفرش هم بماند. این"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-todo-storage.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۱۴ | پروژه‌ی تودولیست با LocalStorage"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۱۴</span><h1>پروژه‌ی تودولیست با LocalStorage</h1><p>تودولیستِ واقعی: افزودن، انجام شدن، ویرایش، حذف، فیلتر (همه، فعال، انجام‌شده) و شمارنده‌ی باقی‌مانده، با ذخیره در <code>localStorage</code> که بعد از رفرش هم بماند. این پروژه، الگوی «state، render و ذخیره» را کامل می‌کند و پایه‌ی هر اپلیکیشن بزرگ‌تر است.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: شکل داده</a></li><li><a href="#s4">قدم ۲: الگوی commit</a></li><li><a href="#s5">قدم ۳: ذخیره‌سازی ایمن</a></li><li><a href="#s6">قدم ۴: Event Delegation</a></li><li><a href="#s7">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s8">اشتباه‌های رایج</a></li><li><a href="#s9">چالش‌ها</a></li><li><a href="#s10">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="520"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+body{display:block}
+.app{max-width:480px;margin:auto}
+h1{font-size:20px;margin:0 0 10px}
+.add{display:flex;gap:8px}
+input[type=text]{flex:1;font:inherit;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.add button{background:var(--a);color:#1a1204;font-weight:700;border-color:var(--a)}
+ul{list-style:none;padding:0;margin:12px 0}
+li{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:6px}
+li.done span{text-decoration:line-through;color:var(--mut)}
+li span{flex:1;cursor:text}
+li button{padding:3px 10px;font-size:12px}
+.bar{display:flex;justify-content:space-between;align-items:center;color:var(--mut);font-size:13px}
+.filters button{padding:4px 12px;font-size:13px;border-radius:999px}
+.filters button.on{background:var(--a);color:#1a1204;border-color:var(--a)}
+.empty{text-align:center;color:var(--mut);padding:16px}
+&lt;/style&gt;
+
+&lt;div class="app"&gt;
+  &lt;h1&gt;کارهای امروز&lt;/h1&gt;
+  &lt;form class="add" id="add"&gt;
+    &lt;input type="text" id="text" placeholder="کار تازه…" aria-label="کار تازه" autocomplete="off"&gt;
+    &lt;button&gt;افزودن&lt;/button&gt;
+  &lt;/form&gt;
+  &lt;ul id="list"&gt;&lt;/ul&gt;
+  &lt;p class="empty" id="empty" hidden&gt;کاری وجود ندارد 🎉&lt;/p&gt;
+  &lt;div class="bar"&gt;
+    &lt;span id="left"&gt;&lt;/span&gt;
+    &lt;div class="filters" id="filters"&gt;
+      &lt;button data-f="all" class="on"&gt;همه&lt;/button&gt;
+      &lt;button data-f="active"&gt;فعال&lt;/button&gt;
+      &lt;button data-f="done"&gt;انجام‌شده&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;button id="clear" style="padding:3px 10px;font-size:12px"&gt;پاک‌کردن انجام‌شده‌ها&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const KEY = "todos-v1";
+const list = document.getElementById("list");
+const empty = document.getElementById("empty");
+let todos = load();                // [{ id, text, done }]
+let filter = "all";
+
+function load() {
+  try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; }
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(todos)); } catch (e) {}
+}
+
+function visible() {
+  if (filter === "active") return todos.filter((t) =&gt; !t.done);
+  if (filter === "done") return todos.filter((t) =&gt; t.done);
+  return todos;
+}
+
+function render() {
+  list.innerHTML = "";
+  visible().forEach((t) =&gt; {
+    const li = document.createElement("li");
+    li.dataset.id = t.id;
+    li.className = t.done ? "done" : "";
+    li.innerHTML = '&lt;input type="checkbox" aria-label="انجام شد"&gt;&lt;span&gt;&lt;/span&gt;&lt;button data-act="del"&gt;حذف&lt;/button&gt;';
+    li.querySelector("input").checked = t.done;
+    li.querySelector("span").textContent = t.text;
+    list.append(li);
+  });
+  empty.hidden = visible().length &gt; 0;
+  const left = todos.filter((t) =&gt; !t.done).length;
+  document.getElementById("left").textContent = left.toLocaleString("fa-IR") + " کار باقی مانده";
+  document.querySelectorAll("#filters button").forEach((b) =&gt; b.classList.toggle("on", b.dataset.f === filter));
+}
+function commit() { save(); render(); }          // هر تغییر: ذخیره و دوباره رسم
+
+document.getElementById("add").addEventListener("submit", (e) =&gt; {
+  e.preventDefault();
+  const input = document.getElementById("text");
+  const text = input.value.trim();
+  if (!text) return;
+  todos.push({ id: Date.now(), text, done: false });
+  input.value = "";
+  commit();
+});
+
+// Event Delegation: یک شنونده برای همه‌ی آیتم‌ها
+list.addEventListener("click", (e) =&gt; {
+  const li = e.target.closest("li");
+  if (!li) return;
+  const id = Number(li.dataset.id);
+  if (e.target.dataset.act === "del") todos = todos.filter((t) =&gt; t.id !== id);
+  else if (e.target.type === "checkbox") todos = todos.map((t) =&gt; (t.id === id ? { ...t, done: !t.done } : t));
+  else return;
+  commit();
+});
+list.addEventListener("dblclick", (e) =&gt; {                 // ویرایش با دابل‌کلیک
+  const li = e.target.closest("li");
+  if (!li || e.target.tagName !== "SPAN") return;
+  const id = Number(li.dataset.id);
+  const next = prompt("ویرایش:", e.target.textContent);
+  if (next &amp;&amp; next.trim()) { todos = todos.map((t) =&gt; (t.id === id ? { ...t, text: next.trim() } : t)); commit(); }
+});
+document.getElementById("filters").addEventListener("click", (e) =&gt; {
+  if (e.target.dataset.f) { filter = e.target.dataset.f; render(); }
+});
+document.getElementById("clear").addEventListener("click", () =&gt; { todos = todos.filter((t) =&gt; !t.done); commit(); });
+render();
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>todo-storage/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: شکل داده</h2></div><p>هر کار یک آبجکت است: <code>{ id, text, done }</code>. <code>id</code> را با <code>Date.now()</code> می‌سازیم تا برای هر کار یکتا باشد. همه‌ی کارها در آرایه‌ی <code>todos</code> هستند و بقیه‌ی برنامه فقط این آرایه را می‌خواند.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>todos.push({ id: Date.now(), text, done: false });</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: الگوی commit</h2></div><p>هر تغییری (افزودن، حذف، تیک زدن) یک مسیر ثابت دارد: آرایه را عوض کن، سپس <code>commit()</code>. این تابع هم در <code>localStorage</code> ذخیره می‌کند و هم صفحه را دوباره می‌سازد. به‌جای <code>push</code> و ویرایش درجا، آرایه‌ی جدید با <code>map</code> و <code>filter</code> می‌سازیم (immutable) که خطاهای کمتری دارد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>function commit() { save(); render(); }
+todos = todos.map((t) =&gt; (t.id === id ? { ...t, done: !t.done } : t));</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: ذخیره‌سازی ایمن</h2></div><p><code>localStorage</code> فقط رشته نگه می‌دارد، پس با <code>JSON.stringify</code> می‌نویسیم و با <code>JSON.parse</code> می‌خوانیم. اگر داده‌ی خراب یا خالی بود، <code>try/catch</code> و <code>|| []</code> برنامه را از کار نمی‌اندازند. در پیش‌نمایش زنده‌ی همین صفحه ذخیره‌سازی بسته است، ولی در فایل دانلودی بعد از رفرش کارها می‌مانند.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; }</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>قدم ۴: Event Delegation</h2></div><p>به‌جای وصل کردن شنونده به هر دکمه‌ی حذف، یک شنونده روی <code>ul</code> داریم و با <code>e.target.closest("li")</code> می‌فهمیم کدام آیتم است. آیتم‌هایی که بعداً ساخته می‌شوند هم خودکار کار می‌کنند.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>list.addEventListener("click", (e) =&gt; {
+  const li = e.target.closest("li");
+  if (!li) return;
+});</code></pre></div></div></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li><code>localStorage</code> و JSON (درس ۲۷)</li><li>Event Delegation (درس ۲۵)</li><li><code>map</code>، <code>filter</code> و Spread (درس‌های ۱۲ و ۱۳)</li><li>ساخت المنت و <code>dataset</code> (درس‌های ۲۳ و ۲۵)</li><li>ترتیب ثابت state ← ذخیره ← render (درس ۲۷)</li></ul></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">۸</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">ویرایش مستقیم آبجکت داخل آرایه</div><p>تغییر درجا ردیابی تغییرات را سخت می‌کند. آرایه یا آبجکت جدید بساز (<code>{ ...t, done: true }</code>).</p></div><div class="note warn"><div class="note-title">ذخیره نکردن بعد از هر تغییر</div><p>اگر فقط گاهی ذخیره کنی، با بسته شدن تب کارها از دست می‌رود؛ برای همین همه‌چیز از <code>commit()</code> می‌گذرد.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>مرتب‌سازی کارها با کشیدن و رها کردن (Drag &amp; Drop).</p><details class="ex-ans"><summary>راهنمایی</summary><p>رویدادهای <code>dragstart</code> و <code>drop</code> و جابه‌جایی در آرایه.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>تاریخ سررسید و برچسب «دیرکرد» اضافه کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>تاریخ را در آبجکت نگه دار و با <code>new Date()</code> مقایسه کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>نسخه‌ی پشتیبان: دکمه‌ی خروجی و ورودی JSON بساز.</p><details class="ex-ans"><summary>راهنمایی</summary><p>از <code>Blob</code> برای دانلود و <code>FileReader</code> برای خواندن فایل استفاده کن.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s10"><div class="lesson-head"><span class="lesson-num">۱۰</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-todo-storage.zip" download>دانلود project-todo-storage.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-image-slider.html">→ پروژه‌ی اسلایدر تصاویر</a><a href="project-music-player.html">پروژه‌ی موزیک پلیر ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

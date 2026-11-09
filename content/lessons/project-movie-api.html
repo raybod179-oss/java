@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>پروژه‌ی ۱۸ | پروژه‌ی Movie API</title><meta name="description" content="جستجوی فیلم و سریال با یک API واقعی: تایپ می‌کنی، نتیجه‌ها با پوستر، امتیاز و سال می‌آیند و با کلیک خلاصه‌ی داستان را می‌بینی. این پروژه چهار مهارت حرفه‌ای"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/project-movie-api.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="پروژه‌ی ۱۸ | پروژه‌ی Movie API"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">پروژه‌ی ۱۸</span><h1>پروژه‌ی Movie API</h1><p>جستجوی فیلم و سریال با یک API واقعی: تایپ می‌کنی، نتیجه‌ها با پوستر، امتیاز و سال می‌آیند و با کلیک خلاصه‌ی داستان را می‌بینی. این پروژه چهار مهارت حرفه‌ای را تمرین می‌کند: <code>debounce</code>، لغو درخواست قبلی با <code>AbortController</code>، حالت‌های loading و خطا و تمیز کردن متن HTML دریافتی. API رایگان TVMaze بدون نیاز به کلید است.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این پروژه چه می‌سازیم؟</h2><ol><li><a href="#s1">نتیجه‌ی نهایی و کد کامل</a></li><li><a href="#s2">پوشه‌ی پروژه و اجرا</a></li><li><a href="#s3">قدم ۱: Debounce</a></li><li><a href="#s4">قدم ۲: لغو درخواست قبلی</a></li><li><a href="#s5">قدم ۳: چهار حالت صفحه و امنیت</a></li><li><a href="#s6">مفاهیمی که در این پروژه استفاده شد</a></li><li><a href="#s7">اشتباه‌های رایج</a></li><li><a href="#s8">چالش‌ها</a></li><li><a href="#s9">دانلود سورس پروژه</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>نتیجه‌ی نهایی و کد کامل</h2></div><p>روی «اجرای زنده» بزن و با پروژه کار کن. کد کامل (CSS و HTML و JavaScript) همین‌جا هست؛ در بخش‌های بعد قدم‌به‌قدم توضیح داده شده. بهتر است اول خودت بسازی و فقط وقتی گیر کردی نگاه کنی.</p><div class="demo demo-full" data-live data-bare data-h="540"><div class="demo-code"><div class="demo-label"><span>کد کامل پروژه · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;style&gt;
+:root{--bg:#070b16;--card:#0f1830;--line:#1d2b4d;--text:#e8f0ff;--mut:#8fa3c8;--a:#fbbf24;--b:#fb923c}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--text);font-family:Tahoma,Vazirmatn,sans-serif;padding:16px}
+button{font:inherit;cursor:pointer;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:12px;padding:10px 18px}
+button:hover{border-color:var(--a)}
+button:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+body{display:block}
+.app{max-width:560px;margin:auto}
+h1{font-size:20px;margin:0 0 10px}
+input{width:100%;font:inherit;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;text-align:center}
+.card:hover{border-color:var(--a)}
+.card img{width:100%;aspect-ratio:2/3;object-fit:cover;display:block;background:var(--bg)}
+.card div{padding:8px;font-size:13px}.card small{color:var(--mut)}
+.rate{color:var(--a)}
+.state{text-align:center;color:var(--mut);padding:20px}.state.err{color:#fb7185}
+.detail{background:var(--card);border:1px solid var(--a);border-radius:14px;padding:14px;margin-top:12px;line-height:1.9}
+.detail h2{margin:0 0 6px;font-size:17px}
+&lt;/style&gt;
+
+&lt;div class="app"&gt;
+  &lt;h1&gt;جستجوی فیلم و سریال&lt;/h1&gt;
+  &lt;input id="q" type="search" placeholder="مثلاً: batman یا friends" aria-label="جستجو" autocomplete="off"&gt;
+  &lt;p class="state" id="state"&gt;نام یک فیلم یا سریال را (انگلیسی) بنویس&lt;/p&gt;
+  &lt;div class="grid" id="grid"&gt;&lt;/div&gt;
+  &lt;div class="detail" id="detail" hidden&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+const API = "https://api.tvmaze.com/search/shows?q=";
+const grid = document.getElementById("grid");
+const state = document.getElementById("state");
+const detail = document.getElementById("detail");
+let controller = null;            // برای لغو درخواست قبلی
+let timer = null;
+
+function setState(text, error = false) {
+  state.textContent = text;
+  state.className = "state" + (error ? " err" : "");
+}
+// متن خلاصه‌ی داستان HTML دارد؛ فقط متن خالصش را می‌گیریم
+const plain = (html) =&gt; new DOMParser().parseFromString(html || "", "text/html").body.textContent;
+
+async function search(text) {
+  if (controller) controller.abort();               // درخواست قبلی بی‌فایده است
+  controller = new AbortController();
+  grid.innerHTML = ""; detail.hidden = true;
+  if (!text) return setState("نام یک فیلم یا سریال را (انگلیسی) بنویس");
+  setState("در حال جستجو…");
+  try {
+    const res = await fetch(API + encodeURIComponent(text), { signal: controller.signal });
+    if (!res.ok) throw new Error("خطای سرور " + res.status);
+    const results = await res.json();
+    if (!results.length) return setState("چیزی پیدا نشد 😕");
+    setState("");
+    results.slice(0, 12).forEach(({ show }) =&gt; grid.append(card(show)));
+  } catch (err) {
+    if (err.name === "AbortError") return;           // لغو عمدی، خطا نیست
+    setState("خطا: " + err.message, true);
+  }
+}
+
+function card(show) {
+  const c = document.createElement("div");
+  c.className = "card";
+  const img = document.createElement("img");
+  img.alt = show.name; img.loading = "lazy";
+  img.src = show.image ? show.image.medium : "data:image/svg+xml;utf8,&lt;svg xmlns='http://www.w3.org/2000/svg' width='2' height='3'/&gt;";
+  const info = document.createElement("div");
+  const year = show.premiered ? show.premiered.slice(0, 4) : "—";
+  const rate = show.rating &amp;&amp; show.rating.average ? "★ " + show.rating.average : "";
+  info.innerHTML = "&lt;b&gt;&lt;/b&gt;&lt;br&gt;&lt;small&gt;&lt;/small&gt; &lt;span class='rate'&gt;&lt;/span&gt;";
+  info.querySelector("b").textContent = show.name;
+  info.querySelector("small").textContent = year;
+  info.querySelector(".rate").textContent = rate;
+  c.append(img, info);
+  c.addEventListener("click", () =&gt; {
+    detail.hidden = false;
+    detail.innerHTML = "&lt;h2&gt;&lt;/h2&gt;&lt;p&gt;&lt;/p&gt;";
+    detail.querySelector("h2").textContent = show.name + " (" + year + ")";
+    detail.querySelector("p").textContent = plain(show.summary) || "خلاصه‌ای ثبت نشده.";
+  });
+  return c;
+}
+
+document.getElementById("q").addEventListener("input", (e) =&gt; {
+  clearTimeout(timer);                               // debounce: ۴۰۰ میلی‌ثانیه بعد از آخرین حرف
+  timer = setTimeout(() =&gt; search(e.target.value.trim()), 400);
+});
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>پوشه‌ی پروژه و اجرا</h2></div><p>برای ساخت روی کامپیوتر خودت یک پوشه با این ساختار بساز:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>ساختار پوشه</span><span class="demo-tag">txt</span></div><pre><code>movie-api/
+├── index.html   ← ساختار صفحه (HTML)
+├── style.css    ← ظاهر (CSS)
+└── script.js    ← منطق (JavaScript)</code></pre></div></div><div class="note tip"><div class="note-title">چطور اجرا کنم؟</div><p>فایل <code>index.html</code> را در مرورگر باز کن، یا در VS Code با افزونه‌ی Live Server روی آن راست‌کلیک و «Open with Live Server» را بزن تا با هر ذخیره، صفحه خودکار تازه شود.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قدم ۱: Debounce</h2></div><p>اگر با هر حرف تایپ‌شده یک درخواست بفرستیم، برای «batman» نه درخواست می‌رود و سرور و کاربر هر دو اذیت می‌شوند. با <code>setTimeout</code> و <code>clearTimeout</code> فقط وقتی کاربر ۴۰۰ میلی‌ثانیه تایپ نکرد جستجو می‌کنیم. همان الگوی درس ۳۳.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>clearTimeout(timer);
+timer = setTimeout(() =&gt; search(value), 400);</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>قدم ۲: لغو درخواست قبلی</h2></div><p>ممکن است جواب «bat» دیرتر از «batman» برسد و نتیجه‌ی اشتباه را نشان بدهد (به این باگ race condition می‌گویند). قبل از هر جستجو، درخواست قبلی را با <code>AbortController</code> لغو می‌کنیم. لغو یک <code>AbortError</code> پرتاب می‌کند که خطای واقعی نیست و بی‌صدا نادیده‌اش می‌گیریم.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>if (controller) controller.abort();
+controller = new AbortController();
+fetch(url, { signal: controller.signal });</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>قدم ۳: چهار حالت صفحه و امنیت</h2></div><p>صفحه چهار حالت دارد: خالی، در حال جستجو، بدون نتیجه، و خطا؛ هرکدام پیام جدا دارند. خلاصه‌ی داستان از سرور با تگ HTML می‌آید. به‌جای <code>innerHTML</code>، آن را با <code>DOMParser</code> به متن خالص تبدیل و با <code>textContent</code> نمایش می‌دهیم تا کد مخرب اجرا نشود. تصویر هم <code>loading="lazy"</code> دارد.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>JavaScript</span><span class="demo-tag">js</span></div><pre><code>const plain = (html) =&gt;
+  new DOMParser().parseFromString(html || "", "text/html").body.textContent;</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>مفاهیمی که در این پروژه استفاده شد</h2></div><p>این پروژه بخش‌هایی از درس‌های قبل را به هم وصل می‌کند. اگر جایی نفهمیدی، همان درس را دوباره بخوان:</p><ul><li>Fetch، <code>res.ok</code> و مدیریت خطا (درس‌های ۳۱ و ۳۰)</li><li>Debounce و <code>AbortController</code> (درس ۳۳)</li><li>Destructuring در پارامتر <code>({ show })</code> (درس ۱۳)</li><li><code>encodeURIComponent</code> و رشته‌ها (درس ۹)</li><li>ساخت المنت امن (درس ۲۳)</li></ul></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">۷</span><h2>اشتباه‌های رایج</h2></div><div class="note warn"><div class="note-title">فراموش کردن <code>encodeURIComponent</code></div><p>فاصله و حروف خاص در آدرس را خراب می‌کنند. ورودی کاربر را همیشه encode کن.</p></div><div class="note warn"><div class="note-title">کلید API داخل کد سمت کاربر</div><p>APIهای کلیددار (مثل TMDB) را از طریق سرور خودت صدا بزن؛ هر کلیدی در مرورگر دیده می‌شود.</p></div></section>
+<section class="lesson" id="s8"><div class="lesson-head"><span class="lesson-num">★</span><h2>چالش‌ها</h2></div><div class="exercise"><div class="ex-title">چالش ۱</div><p>لیست علاقه‌مندی‌ها با ذخیره در <code>localStorage</code> بساز.</p><details class="ex-ans"><summary>راهنمایی</summary><p>شناسه‌ی سریال‌ها را در یک <code>Set</code> نگه دار و به JSON تبدیل کن.</p></details></div><div class="exercise"><div class="ex-title">چالش ۲</div><p>با اسکرول، نتیجه‌های بیشتر نشان بده (نمایش ۱۲ تا ۱۲ تا).</p><details class="ex-ans"><summary>راهنمایی</summary><p>یک <code>IntersectionObserver</code> روی المنت انتهای لیست بگذار.</p></details></div><div class="exercise"><div class="ex-title">چالش ۳</div><p>این پروژه را به API فیلم TMDB وصل کن.</p><details class="ex-ans"><summary>راهنمایی</summary><p>کلید رایگان بگیر و درخواست را از یک تابع سرور (مثل Netlify Function) عبور بده.</p></details></div><div class="note info"><div class="note-title">روش کار</div><p>هر چالش را روی نسخه‌ی خودت انجام بده. با اضافه کردن همین قابلیت‌ها، پروژه یک نمونه‌کار واقعی برای پورتفولیوی تو می‌شود.</p></div></section>
+<section class="lesson" id="s9"><div class="lesson-head"><span class="lesson-num">۹</span><h2>دانلود سورس پروژه</h2></div><div class="note tip"><div class="note-title">فایل zip پروژه</div><p>سورس کامل با سه فایل جداگانه و راهنمای اجرا. می‌توانی آن را شخصی‌سازی کنی و در پورتفولیوی خودت بگذاری.</p><p><a class="rv-btn rv-dl" href="/downloads/project-movie-api.zip" download>دانلود project-movie-api.zip</a></p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="project-shop-cart.html">→ پروژه‌ی فروشگاه با سبد خرید</a><a href="project-image-gallery.html">پروژه‌ی گالری تصاویر با Image API ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

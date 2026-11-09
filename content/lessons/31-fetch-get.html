@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۵ · درس ۴ | API و درخواست GET با Fetch</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/31-fetch-get.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۵ · درس ۴ | API و درخواست GET با Fetch"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/31-fetch-get.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۵ · درس ۴</span><h1>API و درخواست GET با Fetch</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">API چیست؟</a></li><li><a href="#s2">اولین درخواست GET</a></li><li><a href="#s3">قواعد JSON</a></li><li><a href="#s4">الگوی آماده برای پروژه‌ها</a></li><li><a href="#s5">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>API چیست؟</h2></div><p>API رابط گفتگوی برنامه‌ها با هم است. مثل گارسون رستوران: تو سفارش می‌دهی (درخواست) و آشپزخانه‌ی سرور غذا را آماده می‌کند و جواب می‌دهد. بیشتر API ها به سبک <b>REST</b> کار می‌کنند و عملیات را با متد HTTP مشخص می‌کنند (به آن‌ها CRUD هم می‌گویند):</p><ul><li><code>GET</code>: خواندن داده (Read)</li><li><code>POST</code>: ساختن داده‌ی جدید (Create)</li><li><code>PUT</code> و <code>PATCH</code>: ویرایش کامل و ویرایش بخشی (Update)</li><li><code>DELETE</code>: حذف (Delete)</li></ul></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>اولین درخواست GET</h2></div><p><code>fetch</code> یک Promise می‌دهد و جواب سرور در دو مرحله می‌رسد: اول هدرها و وضعیت، بعد بدنه که با <code>res.json()</code> خوانده می‌شود. مثال‌ها از API آزمایشی jsonplaceholder استفاده می‌کنند و نیاز به اینترنت دارند.</p><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;button id="b"&gt;دریافت ۳ پست&lt;/button&gt;
+&lt;ul id="l"&gt;&lt;/ul&gt;
+&lt;p id="s"&gt;&lt;/p&gt;
+&lt;script&gt;
+document.getElementById("b").onclick = async () =&gt; {
+  const s = document.getElementById("s");
+  const l = document.getElementById("l");
+  s.textContent = "در حال دریافت...";
+  l.textContent = "";
+  try {
+    const res = await fetch("https://jsonplaceholder.typicode.com/posts?_limit=3");
+    if (!res.ok) throw new Error("خطای سرور: " + res.status);
+    const posts = await res.json();
+    posts.forEach((p) =&gt; {
+      const li = document.createElement("li");
+      li.textContent = p.title;
+      l.append(li);
+    });
+    s.textContent = "";
+  } catch (err) {
+    s.textContent = "دریافت نشد: " + err.message;
+  }
+};
+&lt;/script&gt;</code></pre></div></div><div class="note warn"><div class="note-title">مهم‌ترین نکته‌ی Fetch</div><p>فقط وقتی ارتباط شبکه قطع باشد Promise رد می‌شود. جواب ۴۰۴ یا ۵۰۰ سرور خطا حساب نمی‌شود و باید خودت <code>res.ok</code> را چک کنی.</p></div><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;button id="b"&gt;درخواست به آدرس ناموجود&lt;/button&gt;
+&lt;p id="s"&gt;&lt;/p&gt;
+&lt;script&gt;
+document.getElementById("b").onclick = async () =&gt; {
+  const s = document.getElementById("s");
+  try {
+    const res = await fetch("https://jsonplaceholder.typicode.com/posts/999999");
+    s.textContent = "ok=" + res.ok + " ، status=" + res.status;
+  } catch (e) {
+    s.textContent = "اتصال برقرار نشد: " + e.message;
+  }
+};
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>قواعد JSON</h2></div><p>کلیدها و رشته‌ها با دابل‌کوتیشن، بدون ویرگول آخر، بدون کامنت و بدون تابع. اگر <code>res.json()</code> خطا داد، جواب سرور JSON معتبر نبوده است.</p></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>الگوی آماده برای پروژه‌ها</h2></div><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>کد</span><span class="demo-tag">js</span></div><pre><code>async function getJSON(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+// استفاده:
+// const posts = await getJSON("https://jsonplaceholder.typicode.com/posts?_limit=5");</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>اطلاعات کاربر شماره‌ی ۱ را بگیر و نام و ایمیلش را نشان بده</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;button id="b"&gt;دریافت&lt;/button&gt;
+&lt;p id="o"&gt;&lt;/p&gt;
+&lt;script&gt;
+document.getElementById("b").onclick = async () =&gt; {
+  const o = document.getElementById("o");
+  try {
+    const res = await fetch("https://jsonplaceholder.typicode.com/users/1");
+    if (!res.ok) throw new Error(res.status);
+    const u = await res.json();
+    o.textContent = u.name + " - " + u.email;
+  } catch (e) { o.textContent = "خطا: " + e.message; }
+};
+&lt;/script&gt;</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="30-async-await.html">→ Async و Await</a><a href="32-fetch-crud.html">POST، PUT، PATCH و DELETE ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

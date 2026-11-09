@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۴ · درس ۵ | تایمرها: setTimeout و setInterval</title><meta name="description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/26-timers.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۴ · درس ۵ | تایمرها: setTimeout و setInterval"><meta property="og:description" content="هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/26-timers.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۴ · درس ۵</span><h1>تایمرها: setTimeout و setInterval</h1><p>هر بخش کوتاه است، کد دارد، خروجی را نشانت می‌دهد و آخرش تمرین. کدها را خودت تایپ کن؛ کپی کردن یاد نمی‌دهد.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">setTimeout: یک بار، بعد از تأخیر</a></li><li><a href="#s2">setInterval و clearInterval</a></li><li><a href="#s3">شمارش معکوس</a></li><li><a href="#s4">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>setTimeout: یک بار، بعد از تأخیر</h2></div><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;button id="b"&gt;پیام را بعد از ۲ ثانیه نشان بده&lt;/button&gt;
+&lt;p id="out"&gt;&lt;/p&gt;
+&lt;script&gt;
+document.getElementById("b").onclick = () =&gt; {
+  document.getElementById("out").textContent = "منتظر باش...";
+  setTimeout(() =&gt; {
+    document.getElementById("out").textContent = "تمام شد!";
+  }, 2000);
+};
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>setInterval و clearInterval</h2></div><p>setInterval هر چند میلی‌ثانیه یک بار تابع را اجرا می‌کند تا وقتی که با <code>clearInterval</code> متوقفش کنی. شناسه‌ی برگشتی را نگه دار.</p><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;h3 id="n"&gt;0&lt;/h3&gt;
+&lt;button id="s"&gt;شروع&lt;/button&gt;
+&lt;button id="p"&gt;توقف&lt;/button&gt;
+&lt;script&gt;
+let id = null, n = 0;
+document.getElementById("s").onclick = () =&gt; {
+  if (id) return;               // از شروع دوباره جلوگیری کن
+  id = setInterval(() =&gt; { document.getElementById("n").textContent = ++n; }, 1000);
+};
+document.getElementById("p").onclick = () =&gt; { clearInterval(id); id = null; };
+&lt;/script&gt;</code></pre></div></div><div class="note warn"><div class="note-title">اشتباه رایج</div><p>اگر دو بار دکمه‌ی شروع را بزنی و شناسه‌ی قبلی را نگه نداری، دو تایمر هم‌زمان کار می‌کنند و دیگر نمی‌توانی اولی را متوقف کنی. همیشه قبل از شروع چک کن.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>شمارش معکوس</h2></div><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;h2 id="t"&gt;10&lt;/h2&gt;
+&lt;button id="go"&gt;شروع&lt;/button&gt;
+&lt;script&gt;
+document.getElementById("go").onclick = () =&gt; {
+  let left = 10;
+  const id = setInterval(() =&gt; {
+    left--;
+    document.getElementById("t").textContent = left;
+    if (left === 0) { clearInterval(id); document.getElementById("t").textContent = "تمام!"; }
+  }, 1000);
+};
+&lt;/script&gt;</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>ساعت دیجیتال بساز که هر ثانیه به‌روز شود</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-live><div class="demo-code"><div class="demo-label"><span>کد (HTML و JS) · قابل اجرا</span><span class="demo-tag">html</span></div><pre><code>&lt;h2 id="c"&gt;&lt;/h2&gt;
+&lt;script&gt;
+const tick = () =&gt; { document.getElementById("c").textContent = new Date().toLocaleTimeString("fa-IR"); };
+tick();
+setInterval(tick, 1000);
+&lt;/script&gt;</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="25-event-flow.html">→ Event Delegation، target و dataset</a><a href="27-bom-storage.html">BOM، LocalStorage و JSON ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

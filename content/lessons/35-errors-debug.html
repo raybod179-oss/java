@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۵ · درس ۸ | مدیریت خطا و دیباگ حرفه‌ای</title><meta name="description" content="برنامه‌نویس حرفه‌ای کسی نیست که خطا نمی‌خورد؛ کسی است که خطا را سریع می‌خواند، پیدا می‌کند و درست مدیریتش می‌کند. در این درس انواع خطا، ساختن خطای دلخواه، "><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/35-errors-debug.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۵ · درس ۸ | مدیریت خطا و دیباگ حرفه‌ای"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۵ · درس ۸</span><h1>مدیریت خطا و دیباگ حرفه‌ای</h1><p>برنامه‌نویس حرفه‌ای کسی نیست که خطا نمی‌خورد؛ کسی است که خطا را سریع می‌خواند، پیدا می‌کند و درست مدیریتش می‌کند. در این درس انواع خطا، ساختن خطای دلخواه، گرفتن خطاهای بی‌صاحب و ابزارهای دیباگ مرورگر را یاد می‌گیری.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">انواع خطا و خواندن پیام</a></li><li><a href="#s2">try، catch و finally</a></li><li><a href="#s3">ساختن و پرتاب خطای دلخواه</a></li><li><a href="#s4">خطا در کدهای ناهمزمان</a></li><li><a href="#s5">ابزارهای دیباگ مرورگر</a></li><li><a href="#s6">روش حل باگ</a></li><li><a href="#s7">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>انواع خطا و خواندن پیام</h2></div><p>هر خطا یک <code>name</code> (نوع)، یک <code>message</code> (توضیح) و یک <code>stack</code> (ردپای فراخوانی‌ها) دارد. نوع خطا نیمی از راه‌حل را می‌گوید:</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const tests = [
+  ["TypeError", () =&gt; null.name],                  // خواندن از null یا undefined
+  ["ReferenceError", () =&gt; undefinedVariable],     // متغیر وجود ندارد
+  ["SyntaxError", () =&gt; JSON.parse("{bad json}")], // نوشتار اشتباه
+  ["RangeError", () =&gt; new Array(-1)],             // عدد خارج از بازه
+];
+for (const [expected, fn] of tests) {
+  try { fn(); } catch (e) { console.log(expected, "←", e.name); }
+}</code></pre></div></div><div class="note info"><div class="note-title">بدان</div><p>پیام «<code>Cannot read properties of undefined (reading "x")</code>» رایج‌ترین خطای جاوااسکریپت است: یعنی چیزی که انتظار آبجکت داشتی <code>undefined</code> بود. اول ببین آن مقدار از کجا می‌آید (API هنوز نیامده؟ اسم کلید غلط است؟).</p></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>try، catch و finally</h2></div><p>بخش <code>finally</code> همیشه اجرا می‌شود، چه خطا رخ دهد چه نه. برای کارهای پایانی مثل خاموش کردن loading عالی است.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>function readSettings(text) {
+  try {
+    console.log("۱) شروع");
+    const data = JSON.parse(text);
+    console.log("۲) خوانده شد:", data.theme);
+    return data;
+  } catch (e) {
+    console.log("۳) خطا:", e.name);
+    return { theme: "light" };                 // مقدار پیش‌فرض امن
+  } finally {
+    console.log("۴) همیشه اجرا می‌شود");
+  }
+}
+readSettings('{"theme":"dark"}');
+readSettings("خراب");</code></pre></div></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>// ?. و ?? جلوی بسیاری از TypeError ها را می‌گیرند
+const user = { profile: null };
+console.log(user.profile?.city);               // undefined (بدون خطا)
+console.log(user.profile?.city ?? "نامشخص");   // نامشخص</code></pre></div></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>ساختن و پرتاب خطای دلخواه</h2></div><p>با <code>throw</code> خودت خطا پرتاب می‌کنی و با <code>class ... extends Error</code> نوع جدید می‌سازی. به این شکل در <code>catch</code> می‌فهمی با کدام نوع خطا طرفی و فقط خطاهایی را که می‌شناسی مدیریت می‌کنی.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class ValidationError extends Error {
+  constructor(field, message) {
+    super(message);
+    this.name = "ValidationError";
+    this.field = field;
+  }
+}
+
+function validate(user) {
+  if (!user.email) throw new ValidationError("email", "ایمیل لازم است");
+  return true;
+}
+
+try {
+  validate({});
+} catch (e) {
+  if (e instanceof ValidationError) console.log("فیلد:", e.field, "|", e.message);
+  else throw e;                    // خطای ناشناخته را قورت نده؛ دوباره پرتاب کن
+}</code></pre></div></div><div class="note warn"><div class="note-title">مراقب باش</div><p>هرگز یک <code>catch</code> خالی ننویس. خطایی که بی‌صدا قورت داده شود، روزها بعد به شکل یک باگ مرموز برمی‌گردد. دست‌کم آن را در کنسول چاپ کن.</p></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>خطا در کدهای ناهمزمان</h2></div><p>در <code>async/await</code> همان <code>try/catch</code> کار می‌کند. با <code>.then/.catch</code> هم می‌توان گرفت. چیزی که هیچ‌کس نگیرد، <b>unhandled rejection</b> می‌شود.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>async function load() { throw new Error("سرور جواب نداد"); }
+
+async function main() {
+  try {
+    await load();
+  } catch (e) {
+    console.log("گرفته شد:", e.message);
+  }
+}
+main();
+load().catch((e) =&gt; console.log("با catch هم می‌شود:", e.message));</code></pre></div></div><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>تور ایمنی سراسری</span><span class="demo-tag">js</span></div><pre><code>// تور ایمنی سراسری: خطاهایی که هیچ‌جا گرفته نشدند
+window.addEventListener("error", (e) =&gt; {
+  console.error("خطای کلی:", e.message, e.filename, e.lineno);
+  // اینجا می‌توانی خطا را به یک سرویس گزارش‌دهی بفرستی
+});
+window.addEventListener("unhandledrejection", (e) =&gt; {
+  console.error("Promise گرفته‌نشده:", e.reason);
+});</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>ابزارهای دیباگ مرورگر</h2></div><p>با F12 (یا کلیک راست ← Inspect) ابزارهای توسعه‌دهنده باز می‌شوند. این تب‌ها را باید بشناسی:</p><ul><li><b>Console:</b> خطاها و خروجی <code>console.log</code>. روی نام فایل و شماره‌ی خط خطا کلیک کن تا به همان خط بروی.</li><li><b>Sources:</b> روی شماره‌ی یک خط کلیک کن تا نقطه‌ی توقف (breakpoint) بگذاری؛ اجرا همان‌جا می‌ایستد و مقدار همه‌ی متغیرها را می‌بینی. با F10 خط‌به‌خط جلو برو.</li><li><b>Network:</b> همه‌ی درخواست‌ها، وضعیت (۲۰۰، ۴۰۴، ...)، زمان و محتوای جواب. برای پروژه‌ی API، اولین جایی که باید نگاه کنی.</li><li><b>Application:</b> محتوای <code>localStorage</code> و کوکی‌ها.</li></ul><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>متدهای کنسول (در کنسول مرورگر امتحان کن)</span><span class="demo-tag">js</span></div><pre><code>console.log("ساده");
+console.error("خطا (قرمز)");
+console.warn("هشدار (زرد)");
+console.table([{ name: "علی", age: 25 }, { name: "سارا", age: 30 }]);   // جدول
+console.group("گروه");
+console.log("داخل گروه");
+console.groupEnd();
+console.time("حلقه");
+for (let i = 0; i &lt; 1e6; i++) {}
+console.timeEnd("حلقه");        // زمان اجرا
+debugger;                        // اگر DevTools باز باشد، اینجا می‌ایستد</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>روش حل باگ</h2></div><p>بیشتر باگ‌ها را با یک روش ثابت می‌شود حل کرد:</p><ol><li><b>خطا را بخوان:</b> نوع، پیام و شماره‌ی خط.</li><li><b>تکرارش کن:</b> دقیقاً چه کاری باعث خطا می‌شود؟</li><li><b>مشکوک را محدود کن:</b> با <code>console.log</code> یا breakpoint ببین کجا مقدار از انتظارت جدا می‌شود.</li><li><b>یک چیز را عوض کن:</b> هر بار فقط یک تغییر، تا بدانی چه چیز مشکل را حل کرد.</li><li><b>تست کن و پاکسازی:</b> لاگ‌ها را بردار و مطمئن شو چیز دیگری خراب نشده.</li></ol><div class="note tip"><div class="note-title">ترفند «اردک لاستیکی»</div><p>اگر بیشتر از ۳۰ دقیقه گیر کردی، مشکل را به‌صورت یک جمله بنویس (دقیقاً چه انتظاری داشتی و چه شد). نوشتن خودش اغلب جواب را نشان می‌دهد؛ اگر نشد، همین جمله را در پشتیبانی بپرس.</p></div></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>تابعی بنویس که یک رشته‌ی JSON بگیرد و در صورت خراب بودن، بدون خطا یک آبجکت خالی برگرداند.</p><details class="ex-ans"><summary>پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const safeParse = (text) =&gt; { try { return JSON.parse(text); } catch (e) { return {}; } };
+console.log(safeParse('{"a":1}'), safeParse("خراب"));</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>کلاس <code>NotFoundError</code> بساز که یک <code>status = 404</code> داشته باشد و در <code>catch</code> با <code>instanceof</code> تشخیصش بده.</p><details class="ex-ans"><summary>پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>class NotFoundError extends Error {
+  constructor(what) { super(what + " پیدا نشد"); this.name = "NotFoundError"; this.status = 404; }
+}
+try { throw new NotFoundError("کاربر"); }
+catch (e) { console.log(e instanceof NotFoundError, e.status, e.message); }</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۳</div><p>در یکی از پروژه‌های قبلی (مثلاً تودولیست) یک breakpoint بگذار و مقدار <code>todos</code> را خط‌به‌خط ببین.</p><details class="ex-ans"><summary>راهنمایی</summary><p>در تب Sources فایل <code>script.js</code> را پیدا کن، روی شماره‌ی خط <code>commit()</code> کلیک کن و یک کار اضافه کن.</p></details></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="34-modules.html">→ ماژول‌ها: import و export</a><a href="project-counter.html">پروژه‌ی شمارنده‌ی عدد ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

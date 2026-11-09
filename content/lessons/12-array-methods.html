@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۲ · درس ۴ | map، filter، reduce و sort</title><meta name="description" content="این متدها مهم‌ترین ابزار کار با داده در جاوااسکریپت‌اند و در هر پروژه‌ای می‌بینی‌شان. همه تابعی می‌گیرند که روی هر عضو اجرا می‌شود.">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/12-array-methods.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۲ · درس ۴ | map، filter، reduce و sort"><meta property="og:description" content="این متدها مهم‌ترین ابزار کار با داده در جاوااسکریپت‌اند و در هر پروژه‌ای می‌بینی‌شان. همه تابعی می‌گیرند که روی هر عضو اجرا می‌شود."><meta property="og:url" content="https://rayvo-javascript.netlify.app/lessons/12-array-methods.html"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۲ · درس ۴</span><h1>map، filter، reduce و sort</h1><p>این متدها مهم‌ترین ابزار کار با داده در جاوااسکریپت‌اند و در هر پروژه‌ای می‌بینی‌شان. همه تابعی می‌گیرند که روی هر عضو اجرا می‌شود.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">forEach و map</a></li><li><a href="#s2">filter</a></li><li><a href="#s3">reduce</a></li><li><a href="#s4">some و every</a></li><li><a href="#s5">sort و reverse</a></li><li><a href="#s6">زنجیره‌ی متدها</a></li><li><a href="#s7">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>forEach و map</h2></div><p>forEach فقط می‌چرخد و چیزی برنمی‌گرداند. map یک آرایه‌ی جدید با نتیجه‌ی هر عضو می‌سازد.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const nums = [1, 2, 3];
+nums.forEach((n) =&gt; console.log("عضو:", n));
+const doubled = nums.map((n) =&gt; n * 2);
+console.log(doubled);</code></pre></div></div></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>filter</h2></div><p>فقط اعضایی که شرط را داشته باشند نگه می‌دارد.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const products = [
+  { name: "کتاب", price: 90 },
+  { name: "مداد", price: 10 },
+  { name: "لپ‌تاپ", price: 5000 },
+];
+const cheap = products.filter((p) =&gt; p.price &lt; 100);
+console.log(cheap.map((p) =&gt; p.name));</code></pre></div></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>reduce</h2></div><p>کل آرایه را به یک مقدار تبدیل می‌کند: مجموع، شمارش، گروه‌بندی.</p><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const products = [{ name: "کتاب", price: 90 }, { name: "مداد", price: 10 }, { name: "لپ‌تاپ", price: 5000 }];
+const total = products.reduce((sum, p) =&gt; sum + p.price, 0);
+console.log(total);
+const count = ["a", "b", "a", "c", "a"].reduce((acc, ch) =&gt; {
+  acc[ch] = (acc[ch] || 0) + 1;
+  return acc;
+}, {});
+console.log(count);</code></pre></div></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>some و every</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log([1, 5, 9].some((n) =&gt; n &gt; 8));    // حداقل یکی
+console.log([1, 5, 9].every((n) =&gt; n &gt; 0));    // همه</code></pre></div></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>sort و reverse</h2></div><div class="note warn"><div class="note-title">دام معروف</div><p>sort بدون ورودی اعداد را مثل متن مرتب می‌کند و 10 را قبل از 2 می‌گذارد. برای عدد حتماً تابع مقایسه بده.</p></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const n = [10, 2, 33, 4];
+console.log([...n].sort());                 // اشتباه
+console.log([...n].sort((a, b) =&gt; a - b));  // صعودی
+console.log(n.toSorted((a, b) =&gt; b - a));   // نزولی، بدون تغییر n
+console.log(n.toReversed());</code></pre></div></div></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">۶</span><h2>زنجیره‌ی متدها</h2></div><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const products = [{ name: "کتاب", price: 90 }, { name: "مداد", price: 10 }, { name: "لپ‌تاپ", price: 5000 }];
+const result = products
+  .filter((p) =&gt; p.price &gt; 50)
+  .map((p) =&gt; p.name)
+  .join("، ");
+console.log(result);</code></pre></div></div></section>
+<section class="lesson" id="s7"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>از آرایه‌ی اعداد فقط زوج‌ها را بردار و مربعشان را بساز</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log([1, 2, 3, 4, 5, 6].filter((n) =&gt; n % 2 === 0).map((n) =&gt; n ** 2));</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>محصول‌ها را بر اساس قیمت نزولی مرتب کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>const list = [{ n: "a", p: 30 }, { n: "b", p: 90 }, { n: "c", p: 10 }];
+console.log(list.toSorted((x, y) =&gt; y.p - x.p).map((x) =&gt; x.n));</code></pre></div></div></details></div><div class="exercise"><div class="ex-title">تمرین ۳</div><p>چالش: بزرگ‌ترین عدد آرایه را با reduce پیدا کن</p><details class="ex-ans"><summary>دیدن پاسخ</summary><div class="demo demo-full" data-run><div class="demo-code"><div class="demo-label"><span>کد · قابل اجرا</span><span class="demo-tag">js</span></div><pre><code>console.log([4, 19, 7, 12].reduce((m, n) =&gt; (n &gt; m ? n : m)));</code></pre></div></div></details></div><div class="note info"><div class="note-title">روش تمرین</div><p>اول خودت حل کن، بعد پاسخ را ببین و با راه‌حل خودت مقایسه کن. چند راه درست برای یک مسئله وجود دارد.</p></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="11-array-basics.html">→ آرایه‌ها: افزودن، حذف و جستجو</a><a href="13-destructuring.html">Destructuring، Spread و Rest ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>

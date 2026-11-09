@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سطح ۵ · درس ۷ | ماژول‌ها: import و export</title><meta name="description" content="پروژه‌ی بزرگ را نمی‌شود در یک فایل نوشت. ماژول‌ها اجازه می‌دهند کد را به فایل‌های کوچک و مرتب بشکنی، هر فایل فقط چیزی را که لازم است نشان بدهد و بقیه‌ی فای"><meta name="robots" content="noindex">
+<link rel="canonical" href="https://rayvo-javascript.netlify.app/lessons/34-modules.html"><meta property="og:type" content="article"><meta property="og:site_name" content="Rayvo"><meta property="og:locale" content="fa_IR"><meta property="og:title" content="سطح ۵ · درس ۷ | ماژول‌ها: import و export"><meta property="og:image" content="https://rayvo-javascript.netlify.app/assets/img/og-rayvo.png">
+<link rel="icon" href="../assets/img/favicon.png?v=js1"><link rel="stylesheet" href="../assets/css/rayvo.css">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("rayvo:theme")||"light")}catch(e){}</script></head>
+<body><div class="course-page"><header class="course-header"><span class="badge">سطح ۵ · درس ۷</span><h1>ماژول‌ها: import و export</h1><p>پروژه‌ی بزرگ را نمی‌شود در یک فایل نوشت. ماژول‌ها اجازه می‌دهند کد را به فایل‌های کوچک و مرتب بشکنی، هر فایل فقط چیزی را که لازم است نشان بدهد و بقیه‌ی فایل‌ها فقط همان را بردارند. این درس پایه‌ی کار با فریم‌ورک‌ها (React، Vue و ...) و ابزارهایی مثل Vite است.</p></header>
+<nav class="toc" aria-label="فهرست مطالب"><h2>توی این درس چه چیزهایی یاد می‌گیریم؟</h2><ol><li><a href="#s1">چرا ماژول؟</a></li><li><a href="#s2">export و import</a></li><li><a href="#s3">استفاده در HTML</a></li><li><a href="#s4">ترکیب و وارد کردن پویا</a></li><li><a href="#s5">ساختار پیشنهادی پروژه</a></li><li><a href="#s6">تمرین‌ها</a></li></ol></nav>
+<section class="lesson" id="s1"><div class="lesson-head"><span class="lesson-num">۱</span><h2>چرا ماژول؟</h2></div><p>بدون ماژول، همه‌ی فایل‌ها با تگ‌های <code>script</code> پشت سر هم بارگیری می‌شوند و همه‌ی متغیرها در یک فضای مشترک (global) قرار می‌گیرند. دو فایل ممکن است ناخواسته یک اسم را بازنویسی کنند و ترتیب نوشتن تگ‌ها هم مهم می‌شود. ماژول‌ها این سه مشکل را حل می‌کنند:</p><ul><li><b>فضای جدا:</b> هر فایل متغیرهای خودش را دارد و چیزی بیرون نمی‌رود مگر با <code>export</code>.</li><li><b>وابستگی روشن:</b> بالای هر فایل نوشته شده از کجا چه چیزی می‌خواهد.</li><li><b>بارگیری مرتب:</b> مرورگر خودش فایل‌ها را به ترتیب وابستگی می‌آورد.</li></ul></section>
+<section class="lesson" id="s2"><div class="lesson-head"><span class="lesson-num">۲</span><h2>export و import</h2></div><p>با <code>export</code> چیزی را از یک فایل بیرون می‌دهی و با <code>import</code> در فایل دیگر می‌گیری. دو نوع export داریم: <b>نام‌دار</b> (named، هر تعداد) و <b>پیش‌فرض</b> (default، فقط یکی در هر فایل).</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>فایل‌های ماژول</span><span class="demo-tag">js</span></div><pre><code>// math.js
+export const PI = 3.14159;
+export function area(r) { return PI * r * r; }
+export const double = (n) =&gt; n * 2;
+
+// logger.js
+export default function log(msg) {          // export پیش‌فرض
+  console.log("[LOG]", msg);
+}</code></pre></div></div><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>استفاده</span><span class="demo-tag">js</span></div><pre><code>// main.js
+import log from "./logger.js";                 // پیش‌فرض: هر اسمی بگذاری
+import { PI, area } from "./math.js";          // نام‌دار: اسم باید یکی باشد
+import { double as twice } from "./math.js";   // تغییر نام با as
+
+log(area(2));       // 12.56636
+log(twice(21));     // 42</code></pre></div></div><div class="note warn"><div class="note-title">مراقب باش</div><p>در مسیر import پسوند <code>.js</code> و شروع با <code>./</code> (یا <code>../</code>) را فراموش نکن. بدون آن مرورگر فکر می‌کند اسم یک بسته‌ی نصب‌شده است و خطا می‌دهد.</p></div></section>
+<section class="lesson" id="s3"><div class="lesson-head"><span class="lesson-num">۳</span><h2>استفاده در HTML</h2></div><p>برای اینکه مرورگر فایل را به‌عنوان ماژول بخواند، تگ را با <code>type="module"</code> می‌نویسی. فقط فایل ورودی (main) را در HTML می‌گذاری؛ بقیه را خودش import می‌کند.</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>index.html</span><span class="demo-tag">html</span></div><pre><code>&lt;!DOCTYPE html&gt;
+&lt;html lang="fa" dir="rtl"&gt;
+&lt;body&gt;
+  &lt;h1 id="title"&gt;&lt;/h1&gt;
+  &lt;script type="module" src="main.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre></div></div><ul><li>اسکریپت ماژول به‌طور خودکار <b>defer</b> است؛ بعد از ساخته شدن صفحه اجرا می‌شود، پس لازم نیست <code>DOMContentLoaded</code> بنویسی.</li><li>همیشه در حالت <b>strict</b> است.</li><li>متغیرها به <code>window</code> نمی‌چسبند؛ <code>onclick="..."</code> داخل HTML نمی‌تواند به آن‌ها دسترسی بگیرد و باید با <code>addEventListener</code> وصل کنی.</li></ul><div class="note warn"><div class="note-title">مراقب باش: Live Server</div><p>ماژول‌ها با باز کردن مستقیم فایل (<code>file://</code>) خطای CORS می‌دهند. حتماً پروژه را با یک سرور محلی اجرا کن؛ ساده‌ترین راه افزونه‌ی Live Server در VS Code است.</p></div></section>
+<section class="lesson" id="s4"><div class="lesson-head"><span class="lesson-num">۴</span><h2>ترکیب و وارد کردن پویا</h2></div><p>چند الگوی دیگر که در پروژه‌های واقعی زیاد می‌بینی:</p><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>الگوهای پیشرفته</span><span class="demo-tag">js</span></div><pre><code>// وارد کردن همه با یک نام (namespace)
+import * as utils from "./utils.js";
+utils.format(10);
+
+// بازصادرکردن: یک فایل «ورودی» که چند ماژول را جمع می‌کند (index.js)
+export { area, PI } from "./math.js";
+export { default as log } from "./logger.js";
+
+// import پویا: فقط وقتی لازم شد بارگیری شود (سرعت بیشتر)
+button.addEventListener("click", async () =&gt; {
+  const { drawChart } = await import("./chart.js");
+  drawChart();
+});</code></pre></div></div><div class="note info"><div class="note-title">بدان</div><p>import پویا (<code>import()</code>) یک Promise برمی‌گرداند، پس با <code>await</code> یا <code>.then</code> استفاده می‌شود. برای بخش‌های سنگین سایت که همیشه لازم نیست عالی است.</p></div></section>
+<section class="lesson" id="s5"><div class="lesson-head"><span class="lesson-num">۵</span><h2>ساختار پیشنهادی پروژه</h2></div><div class="demo demo-full"><div class="demo-code"><div class="demo-label"><span>نمونه‌ی ساختار</span><span class="demo-tag">txt</span></div><pre><code>my-app/
+├── index.html
+├── style.css
+└── js/
+    ├── main.js        ← نقطه‌ی شروع (type="module")
+    ├── api.js         ← کار با fetch
+    ├── storage.js     ← localStorage
+    ├── ui.js          ← ساخت و تغییر DOM
+    └── utils.js       ← توابع کمکی کوچک</code></pre></div></div><p>هر فایل یک مسئولیت دارد. اگر پروژه‌ی تودولیست را اینطور بشکنی، <code>storage.js</code> را بدون دست زدن به بقیه عوض می‌کنی (مثلاً به یک API واقعی) و این همان چیزی است که به آن کد تمیز می‌گویند.</p></section>
+<section class="lesson" id="s6"><div class="lesson-head"><span class="lesson-num">★</span><h2>تمرین‌ها</h2></div><div class="exercise"><div class="ex-title">تمرین ۱</div><p>پروژه‌ی «ماشین حساب» را به سه فایل بشکن: <code>calc.js</code> (فقط محاسبه‌ها)، <code>ui.js</code> (نمایش) و <code>main.js</code>.</p><details class="ex-ans"><summary>راهنمایی</summary><p>توابع <code>calc</code> و <code>clean</code> را با <code>export</code> بیرون بده و در <code>main.js</code> import کن. حتماً با Live Server اجرا کن.</p></details></div><div class="exercise"><div class="ex-title">تمرین ۲</div><p>یک فایل <code>index.js</code> بساز که <code>export * from</code> چند فایل را جمع کند و بقیه فقط از همان import کنند.</p><details class="ex-ans"><summary>راهنمایی</summary><code>export * from "./a.js";</code> همه‌ی exportهای نام‌دار را بازصادر می‌کند (default را نه).</details></div></section>
+
+<nav class="lesson-nav" aria-label="ناوبری بین بخش‌ها"><a href="00-index.html">فهرست درس‌ها</a><a href="33-axios-optimize.html">→ Axios و بهینه‌سازی درخواست‌ها</a><a href="35-errors-debug.html">مدیریت خطا و دیباگ حرفه‌ای ←</a></nav></div><script src="../assets/js/rayvo.js"></script></body></html>
